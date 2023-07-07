@@ -1,7 +1,7 @@
 import os
 import traceback
 import streamlit as st
-from speechRecognition import speech_recognition as sr
+import speech_recognition as sr
 from transformers import pipeline
 from os import path
 
