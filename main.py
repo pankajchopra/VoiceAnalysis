@@ -1,6 +1,5 @@
 import os
 import traceback
-from scipy.io import wavfile
 import streamlit as st
 import speech_recognition as sr
 from transformers import pipeline
