@@ -65,7 +65,7 @@ st.sidebar.write("""The Audio Analysis app is a powerful tool that allows you to
 # AUDIO_FILE2 = path.join(path.dirname(path.realpath(__file__)), "voices\OSR_us_000_0040_8k.wav")
 # print(AUDIO_FILE2)
 AUDIO_FILE3 = path.join(path.dirname(path.realpath(__file__)), "voices\OSR_us_000_0019_8k.wav")
-print(AUDIO_FILE3)
+st.write(AUDIO_FILE3)
 transcribed_text = transcribe_audio_file(AUDIO_FILE3)
 sentiment_label, sentiment_score = perform_sentiment_analysis(transcribed_text)
 st.header("Transcribed Text")
