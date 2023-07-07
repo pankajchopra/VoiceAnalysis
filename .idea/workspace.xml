@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ec3b2fa7-e5a1-463b-9ff4-d7ce5e5db743" name="Changes" comment="added requirements.txt and streamlit config">
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-    </list>
+    <list default="true" id="ec3b2fa7-e5a1-463b-9ff4-d7ce5e5db743" name="Changes" comment="added requirements.txt and streamlit config" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -107,7 +105,7 @@
       <workItem from="1688593449966" duration="242000" />
       <workItem from="1688593904787" duration="8936000" />
       <workItem from="1688683158341" duration="415000" />
-      <workItem from="1688683596491" duration="14083000" />
+      <workItem from="1688683596491" duration="14383000" />
     </task>
     <task id="LOCAL-00001" summary="removed unwanted imports">
       <option name="closed" value="true" />
@@ -181,7 +179,23 @@
       <option name="project" value="LOCAL" />
       <updated>1688697737253</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="added requirements.txt and streamlit config">
+      <option name="closed" value="true" />
+      <created>1688697985874</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1688697985874</updated>
+    </task>
+    <task id="LOCAL-00011" summary="added requirements.txt and streamlit config">
+      <option name="closed" value="true" />
+      <created>1688698141306</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1688698141306</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
