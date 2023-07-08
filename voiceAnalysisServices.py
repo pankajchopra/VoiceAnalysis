@@ -1,6 +1,6 @@
 import speech_recognition as sr
 from transformers import pipeline
-import gradio as gr
+# import gradio as gr
 # import whisper
 
 # Twitter-roberta-base-sentiment is a roBERTa model trained on ~58M tweets and fine-tuned for sentiment analysis. Fine-tuning is the process of taking a pre-trained large language model (e.g. roBERTa in this case) and then tweaking it with additional training data to make it perform a second similar task (e.g. sentiment analysis).

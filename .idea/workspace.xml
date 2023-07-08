@@ -4,13 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ec3b2fa7-e5a1-463b-9ff4-d7ce5e5db743" name="Changes" comment="added requirements.txt and streamlit config">
-      <change afterPath="$PROJECT_DIR$/myUtilityDefs.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/testEmotions.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/voiceAnalysisServices.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/work-in-progress.png" afterDir="false" />
+    <list default="true" id="ec3b2fa7-e5a1-463b-9ff4-d7ce5e5db743" name="Changes" comment="added Upload Audio files and other refactoring">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/voiceAnalysisServices.py" beforeDir="false" afterPath="$PROJECT_DIR$/voiceAnalysisServices.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -143,7 +139,7 @@
       <workItem from="1688593449966" duration="242000" />
       <workItem from="1688593904787" duration="8936000" />
       <workItem from="1688683158341" duration="415000" />
-      <workItem from="1688683596491" duration="56969000" />
+      <workItem from="1688683596491" duration="57342000" />
     </task>
     <task id="LOCAL-00001" summary="removed unwanted imports">
       <option name="closed" value="true" />
@@ -273,7 +269,15 @@
       <option name="project" value="LOCAL" />
       <updated>1688706013515</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="added Upload Audio files and other refactoring">
+      <option name="closed" value="true" />
+      <created>1688834169193</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1688834169193</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -286,7 +290,8 @@
     <MESSAGE value="removed unwanted imports" />
     <MESSAGE value="added streamlit config" />
     <MESSAGE value="added requirements.txt and streamlit config" />
-    <option name="LAST_COMMIT_MESSAGE" value="added requirements.txt and streamlit config" />
+    <MESSAGE value="added Upload Audio files and other refactoring" />
+    <option name="LAST_COMMIT_MESSAGE" value="added Upload Audio files and other refactoring" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -298,7 +303,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/main.py</url>
-          <line>139</line>
+          <line>141</line>
           <option name="timeStamp" value="5" />
         </line-breakpoint>
       </breakpoints>
