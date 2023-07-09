@@ -1,10 +1,13 @@
 import traceback
 import streamlit as st
-from voiceAnalysisServices import perform_sentiment_analysis_using_distilbert, transcribe_audio_file, perform_text_classification_using_bhadresh_savani
+from voiceAnalysisServices import perform_sentiment_analysis_using_distilbert, transcribe_audio_file, perform_text_classification_using_bhadresh_savani, transcribe_audio_data
 from myUtilityDefs import convertToNewDictionary, print_sentiments, get_sentiment_emoji
 import pandas as pd
 import numpy as np
 from os import path
+import audio_recorder_streamlit as ars
+import time
+
 
 st.set_page_config(layout="wide")
 # col1, col2 = st.columns([1,1])
@@ -42,22 +45,34 @@ if action=='Sample Audio':
 elif action=='Upload an Audio':
     st.markdown("*Upload an audio file(format=wav)*")
 elif action=='Live Audio':
-    st.write("Microphone here")
+    st.sidebar.markdown('*Audio Recorder*')
+    with st.sidebar:
+        recorded_audio_in_bytes = ars.audio_recorder(text="Click to Record", pause_threshold=2.0, sample_rate=41_000)
+
+
+def write_current_status(status_area, text):
+    with status_area:
+        st.empty()
+        st.markdown('**'+text+'**');
+
 
 def process_and_show_semantic_analysis_results(audio_file, transcribed, transcribed_text):
     if not transcribed:
         st.write(f'Processing {audio_file}...' )
         transcribed_text = transcribe_audio_file(audio_file)
         # st.header("Transcribed Text")
-        st.text_area("Transcribed Text", transcribed_text, key=1, height=200)
+        st.text_area("Transcribed Text", transcribed_text, key=1, height=150)
     st.header("Transcribed Text")
-    st.text_area("", transcribed_text, height=200)
+    st.text_area("", transcribed_text, height=150)
 
     # st.markdown(" # Analysing...")
     return_all = False
     sentiment_label, sentiment_score = perform_sentiment_analysis_using_distilbert(transcribed_text, return_all)
-    st.header("Sentiment Analysis")
-    st.markdown("*" + print_sentiments(sentiment_label, sentiment_score) + "*")
+    if(sentiment_label=='error'):
+        traceback.print_exc()
+    else:
+        st.header("Sentiment Analysis")
+        st.markdown("*" + print_sentiments(sentiment_label, sentiment_score) + "*")
 
 
 def process_and_show_text_classification_results(audio_file, transcribed, transcribed_text):
@@ -101,7 +116,20 @@ def display_sentiment_results(sentiment_results, option):
     return sentiment_text
 
 
+def doActualthings(main_status, status_area,audio_file):
+    write_current_status(main_status, f'   *Selected Sample File: {audio_file}*')
+    write_current_status(status_area, f'Transcribing audio of  {audio_file}...')
+    transcribed_text = transcribe_audio_file(audio_file)
+    write_current_status(status_area, f'Semantic Analysis of {audio_file}...')
+    process_and_show_semantic_analysis_results(None, True, transcribed_text)
+    write_current_status(status_area, f'Text Classification of {audio_file}...')
+    process_and_show_text_classification_results(audio_file, True, transcribed_text)
+    # write_current_status(main_status, '')
+    write_current_status(status_area, 'Finished Processing!! ')
+
 def main():
+    main_status = st.markdown('')
+    status_area = st.markdown('')
     if action=='Sample Audio':
         audio_file1 = path.join(path.dirname(path.realpath(__file__)), "voices/OSR_us_000_0061_8k.wav")
         audio_file2 = path.join(path.dirname(path.realpath(__file__)), "voices/OSR_us_000_0040_8k.wav")
@@ -113,24 +141,15 @@ def main():
             if process_sample1_button:
                 # actionRadioButtonState["value"] = False
                 # st.session_state.actionRadioButtonState = actionRadioButtonState
-                st.write(f'Processing {audio_file1}...')
-                transcribed_text = transcribe_audio_file(audio_file1)
-                process_and_show_semantic_analysis_results(None,True, transcribed_text)
-                process_and_show_text_classification_results(audio_file1,True, transcribed_text)
+                doActualthings(main_status, status_area, audio_file1)
             elif process_sample2_button:
-                actionRadioButtonState["value"] = False
-                st.session_state.actionRadioButtonState = actionRadioButtonState
-                st.write(f'Processing {audio_file2}...')
-                transcribed_text = transcribe_audio_file(audio_file2)
-                process_and_show_semantic_analysis_results(None,True, transcribed_text)
-                process_and_show_text_classification_results(audio_file2,True, transcribed_text)
+                # actionRadioButtonState["value"] = False
+                # st.session_state.actionRadioButtonState = actionRadioButtonState
+                doActualthings(main_status, status_area,audio_file2)
             elif process_sample3_button:
-                actionRadioButtonState["value"] = False
-                st.session_state.actionRadioButtonState = actionRadioButtonState
-                st.write(f'Processing {audio_file3}...')
-                transcribed_text = transcribe_audio_file(audio_file3)
-                process_and_show_semantic_analysis_results(None,True, transcribed_text)
-                process_and_show_text_classification_results(audio_file3,True, transcribed_text)
+                # actionRadioButtonState["value"] = False
+                # st.session_state.actionRadioButtonState = actionRadioButtonState
+                doActualthings(main_status, status_area, audio_file3)
         except Exception as ex:
             st.error("Error occurred during audio transcription and sentiment analysis.")
             st.error(str(ex))
@@ -147,9 +166,13 @@ def main():
                 uploadButtonState["value"] = False
                 st.session_state.uploadButtonState = uploadButtonState
                 st.write(f'Processing {audio_file}...')
+                write_current_status(status_area, f'Transcribing audio of  {audio_file}...')
                 transcribed_text = transcribe_audio_file(audio_file)
+                write_current_status(status_area, f'Semantic Analysis of {audio_file}...')
                 process_and_show_semantic_analysis_results(None, True, transcribed_text)
+                write_current_status(status_area, f'Text Classification of {audio_file}...')
                 process_and_show_text_classification_results(audio_file, True, transcribed_text)
+                write_current_status(status_area, f'Done!! Here are the results of {audio_file}...')
             except Exception as ex:
                 st.error("Error occurred during audio transcription and sentiment analysis.")
                 st.error(str(ex))
@@ -159,7 +182,35 @@ def main():
                 st.session_state.uploadButtonState = uploadButtonState
         # Perform audio tr
     if action == 'Live Audio':
-        st.write("Record on Microphone ")
+        # st.sidebar.markdown('*Audio Recorder*')
+        # recorded_audio_in_bytes = ars.audio_recorder(text="Click to Record", pause_threshold=3.0, sample_rate=41_000)
+        try:
+            if recorded_audio_in_bytes is not None:
+                if len(recorded_audio_in_bytes) > 0:
+                    # convert to a wav file
+                    wav_file = open("recorded.mp3", "wb")
+                    wav_file.truncate()
+                    wav_file.write(recorded_audio_in_bytes)
+                    wav_file.close()
+                    # wav_file = open("recorded.mp3", "r")
+                    # wav_file.close()
+                    # st.empty()
+                    write_current_status(status_area, "Processing your recording...")
+                    # transcribed_text = transcribe_audio_data(recorded_audio_in_bytes)
+                    write_current_status(status_area, "Transcribing audio...")
+                    transcribed_text = transcribe_audio_file('recorded.mp3')
+                    write_current_status(status_area, "Semantic Analysis...")
+                    process_and_show_semantic_analysis_results(None, True, transcribed_text)
+                    write_current_status(status_area, "Text Classification...")
+                    process_and_show_text_classification_results(None, True, transcribed_text)
+                    write_current_status(status_area,"Done!! Here are the results")
+        except Exception as ex:
+            st.error("Error occurred during audio transcription and sentiment analysis.")
+            st.error(str(ex))
+            traceback.print_exc()
+        finally:
+            uploadButtonState["value"] = True
+            st.session_state.uploadButtonState = uploadButtonState
 
 
 if __name__ == "__main__":

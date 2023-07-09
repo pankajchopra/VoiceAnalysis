@@ -51,6 +51,7 @@ def get_sentiment_emoji(sentiment):
         "gratitude": "🙏",
         "pride": "🦁",
         "negative": "👎",
-        "positive":"👍"
+        "positive":"👍",
+        "bad_data":"#@#%"
     }
     return emoji_mapping.get(sentiment, "")

@@ -1,4 +1,5 @@
 import speech_recognition as sr
+import streamlit
 from transformers import pipeline
 # import gradio as gr
 # import whisper
@@ -13,13 +14,21 @@ distilbert_base_uncased_model="distilbert-base-uncased-finetuned-sst-2-english"
 bhadresh_savani_bert_base_uncased_emotion_model="bhadresh-savani/bert-base-uncased-emotion"
 
 def perform_sentiment_analysis_using_distilbert(text, return_all):
-    model_name = "distilbert-base-uncased-finetuned-sst-2-english"
-    sentiment_analysis = pipeline("sentiment-analysis", model=model_name, return_all_scores=return_all)
-    results = sentiment_analysis(text)
-    print(f'Sentiment analysis results are {results}')
-    sentiment_label = results[0]['label']
-    sentiment_score = results[0]['score']
-    return sentiment_label, sentiment_score
+    try:
+        model_name = "distilbert-base-uncased-finetuned-sst-2-english"
+        sentiment_analysis = pipeline("sentiment-analysis", model=model_name, return_all_scores=return_all)
+        results = sentiment_analysis(text)
+        print(f'Sentiment analysis results are {results}')
+        if(results[0]):
+            sentiment_label = results[0]['label']
+            sentiment_score = results[0]['score']
+            return sentiment_label, sentiment_score
+        else:
+            return 'bad_data', 'Not Enough or Bad Data'
+    except Exception as ex:
+        print("Error occurred during .. perform_sentiment_analysis_using_distilbert")
+        print(str(ex))
+        return "error", str(ex)
 
 
 def perform_text_classification_using_bhadresh_savani(text, return_all):
@@ -27,12 +36,15 @@ def perform_text_classification_using_bhadresh_savani(text, return_all):
     classification = pipeline("text-classification", model=model_name, return_all_scores=return_all)
     results = classification(text)
     print(f'Text Classification Analysis results are {results}')
-    if(return_all):
+    if return_all:
         return results[0]
     else:
-        sentiment_label = results[0]['label']
-        sentiment_score = results[0]['score']
-        return sentiment_label, sentiment_score
+        if results[0]:
+            sentiment_label = results[0]['label']
+            sentiment_score = results[0]['score']
+            return sentiment_label, sentiment_score
+        else:
+            return 'bad_data', 'Not Enough or Bad Data'
 
 
 def perform_sentiment_analysis_using_sam_lowe(text, return_all):
@@ -40,7 +52,7 @@ def perform_sentiment_analysis_using_sam_lowe(text, return_all):
     classification = pipeline("sentiment-analysis", model=model_name, return_all_scores=return_all)
     results = classification(text)
     print(f'Text Classification Analysis results are {results}')
-    if(return_all):
+    if return_all:
         return results[0]
     else:
         sentiment_label = results[0]['label']
@@ -63,8 +75,9 @@ def transcribe_audio_file(audio_file):
         return transcribed_text1
 
 
-def transcribe_audio_data(audio_data, r: sr.Recognizer):
+def transcribe_audio_data(audio_data):
     try:
+        r = sr.Recognizer()
         transcribed_text1 = r.recognize_google(audio_data)
         print(r.recognize_google(audio_data, language='en-US'))
     except sr.UnknownValueError:
