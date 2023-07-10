@@ -4,8 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ec3b2fa7-e5a1-463b-9ff4-d7ce5e5db743" name="Changes" comment="added Upload Audio files and other refactoring">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="ec3b2fa7-e5a1-463b-9ff4-d7ce5e5db743" name="Changes" comment="added ntk_data">
       <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -43,7 +42,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "C:/Users/panka/PycharmProjects/VoiceAnalysis",
+    "last_opened_file_path": "C:/Users/panka/PycharmProjects/VoiceAnalysis/venv/ntk_data/tokenizers",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -59,6 +58,7 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\panka\PycharmProjects\VoiceAnalysis\venv\ntk_data\tokenizers" />
       <recent name="C:\Users\panka\PycharmProjects\VoiceAnalysis" />
       <recent name="C:\Users\panka\PycharmProjects\pythonProject" />
     </key>
@@ -153,7 +153,7 @@
       <workItem from="1688593904787" duration="8936000" />
       <workItem from="1688683158341" duration="415000" />
       <workItem from="1688683596491" duration="59955000" />
-      <workItem from="1688911473170" duration="24187000" />
+      <workItem from="1688911473170" duration="24497000" />
     </task>
     <task id="LOCAL-00001" summary="removed unwanted imports">
       <option name="closed" value="true" />
@@ -363,7 +363,15 @@
       <option name="project" value="LOCAL" />
       <updated>1688965277147</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="added ntk_data">
+      <option name="closed" value="true" />
+      <created>1688967371412</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1688967371412</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -377,7 +385,8 @@
     <MESSAGE value="added streamlit config" />
     <MESSAGE value="added requirements.txt and streamlit config" />
     <MESSAGE value="added Upload Audio files and other refactoring" />
-    <option name="LAST_COMMIT_MESSAGE" value="added Upload Audio files and other refactoring" />
+    <MESSAGE value="added ntk_data" />
+    <option name="LAST_COMMIT_MESSAGE" value="added ntk_data" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
