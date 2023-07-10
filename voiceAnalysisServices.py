@@ -1,5 +1,5 @@
 import speech_recognition as sr
-import streamlit
+# import streamlit
 from transformers import pipeline
 # import gradio as gr
 # import whisper
