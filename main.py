@@ -1,3 +1,4 @@
+import time
 import traceback
 import streamlit as st
 from voiceAnalysisServices import perform_sentiment_analysis_using_distilbert, transcribe_audio_file, perform_text_classification_using_bhadresh_savani, transcribe_audio_data
@@ -40,12 +41,13 @@ action = st.sidebar.radio('Actions',
                           )
 
 if action=='Sample Audio':
-    process_sample1_button = st.sidebar.button("Process Sample 1", key=1 )
-    process_sample2_button = st.sidebar.button("Process Sample 2", key=2)
-    process_sample3_button = st.sidebar.button("Process Sample 3", key=3)
+    process_sample1_button = st.sidebar.button("Sample 1", key=1 )
+    process_sample2_button = st.sidebar.button("Call Center Sample", key=2)
+    process_sample3_button = st.sidebar.button("Sample 3", key=3)
 elif action=='Upload an Audio':
-    st.markdown("**Upload an audio file(format=wav)**")
-    st.markdown("*Do not upload music wav file it will give error*")
+    col1, col2 = st.columns([1,2])
+    col1.markdown("**Upload an audio file (format = wav only) **")
+    col2.markdown("*Do not upload music wav file it will give error(s).*")
 
 elif action=='Live Audio':
     st.sidebar.markdown('*Audio Recorder*')
@@ -146,47 +148,47 @@ def display_sentiment_results(sentiment_results, option):
     return sentiment_text
 
 
-def doActualthings(main_status, status_area,audio_file):
-    progressBar = st.session_state.get('progressBar')
-    # write_current_status(main_status, f'   *Selected Sample File: {audio_file}*')
-    write_current_status(status_area, f'Transcribing audio of  {audio_file}...')
-    progressBar = st.progress(10)
-    transcribed_text = transcribe_audio_file(audio_file)
-    progressBar = st.progress(20)
-    write_current_status(status_area, f'Semantic Analysis of {audio_file}...')
-    process_and_show_semantic_analysis_results(None, True, transcribed_text)
-    progressBar = st.progress(60)
-    write_current_status(status_area, f'Text Classification of {audio_file}...')
-    process_and_show_text_classification_results(audio_file, True, transcribed_text)
-    progressBar = st.progress(80)
-    # write_current_status(main_status, '')
-    write_current_status(status_area, 'Finished Processing!! ')
-    progressBar = st.progress(100)
+def doActualthings(status_area,audio_file):
+    with st.spinner('Processing...'):
+        progressBar = st.progress(5,"Processing...")
+        time.sleep(0.2)
+        progressBar.progress(15, 'Transcribing...')
+
+        # write_current_status(main_status, f'   *Selected Sample File: {audio_file}*')
+        write_current_status(status_area, f'Transcribing audio of  {audio_file}...')
+        transcribed_text = transcribe_audio_file(audio_file)
+        progressBar.progress(40, 'Semantic Analysis..')
+        write_current_status(status_area, f'Semantic Analysis of {audio_file}...')
+        process_and_show_semantic_analysis_results(None, True, transcribed_text)
+        progressBar.progress(70, 'Textual Classification..')
+        write_current_status(status_area, f'Text Classification of {audio_file}...')
+        process_and_show_text_classification_results(audio_file, True, transcribed_text)
+        progressBar.progress(90, 'Textual Classification Done...')
+        # write_current_status(status_area, 'Finished Processing!! ')
+        progressBar.progress(100, 'Done, Finished Processing!!')
 
 def main():
-    progressBar = st.progress(0)
-    st.session_state['progressBar'] = progressBar
-    main_status = st.markdown('')
+    # progressBar = st.progress(0)
+    # st.session_state['progressBar'] = progressBar
     status_area = st.markdown('')
     if action=='Sample Audio':
         audio_file1 = path.join(path.dirname(path.realpath(__file__)), "voices/OSR_us_000_0061_8k.wav")
-        audio_file2 = path.join(path.dirname(path.realpath(__file__)), "voices/OSR_us_000_0040_8k.wav")
+        audio_file2 = path.join(path.dirname(path.realpath(__file__)), "voices/call_center.wav")
         audio_file3 = path.join(path.dirname(path.realpath(__file__)), "voices/OSR_us_000_0019_8k.wav")
         try:
             # process_sample1_button = st.sidebar.button("Process Sample 1", key=1)
             # process_sample2_button = st.sidebar.button("Process Sample 2", key=2)
             # process_sample3_button = st.sidebar.button("Process Sample 3", key=3)
-            progressBar = st.progress(0)
             if process_sample1_button:
-                doActualthings(main_status, status_area, audio_file1)
+                doActualthings( status_area, audio_file1)
             elif process_sample2_button:
                 # actionRadioButtonState["value"] = False
                 # st.session_state.actionRadioButtonState = actionRadioButtonState
-                doActualthings(main_status, status_area,audio_file2)
+                doActualthings(status_area,audio_file2)
             elif process_sample3_button:
                 # actionRadioButtonState["value"] = False
                 # st.session_state.actionRadioButtonState = actionRadioButtonState
-                doActualthings(main_status, status_area, audio_file3)
+                doActualthings(status_area, audio_file3)
         except Exception as ex:
             st.error("Error occurred during audio transcription and sentiment analysis.")
             st.error(str(ex))
@@ -200,9 +202,9 @@ def main():
         upload_button = st.sidebar.button("Upload & Process", key="upload", disabled=not uploadButtonState)
         if audio_file and upload_button:
             try:
-                uploadButtonState["value"] = False
-                st.session_state.uploadButtonState = uploadButtonState
-                doActualthings(main_status, status_area, audio_file)
+                # uploadButtonState["value"] = False
+                # st.session_state.uploadButtonState = uploadButtonState
+                doActualthings(status_area, audio_file)
                 # st.write(f'Processing {audio_file}...')
                 # write_current_status(status_area, f'Transcribing audio of  {audio_file}...')
                 # transcribed_text = transcribe_audio_file(audio_file)
@@ -230,18 +232,19 @@ def main():
                     wav_file.truncate()
                     wav_file.write(recorded_audio_in_bytes)
                     wav_file.close()
+                    doActualthings(status_area, "recorded.mp3")
                     # wav_file = open("recorded.mp3", "r")
                     # wav_file.close()
                     # st.empty()
-                    write_current_status(status_area, "Processing your recording...")
-                    # transcribed_text = transcribe_audio_data(recorded_audio_in_bytes)
-                    write_current_status(status_area, "Transcribing audio...")
-                    transcribed_text = transcribe_audio_file('recorded.mp3')
-                    write_current_status(status_area, "Semantic Analysis...")
-                    process_and_show_semantic_analysis_results(None, True, transcribed_text)
-                    write_current_status(status_area, "Text Classification...")
-                    process_and_show_text_classification_results(None, True, transcribed_text)
-                    write_current_status(status_area,"Done!! Here are the results")
+                    # write_current_status(status_area, "Processing your recording...")
+                    # # transcribed_text = transcribe_audio_data(recorded_audio_in_bytes)
+                    # write_current_status(status_area, "Transcribing audio...")
+                    # transcribed_text = transcribe_audio_file('recorded.mp3')
+                    # write_current_status(status_area, "Semantic Analysis...")
+                    # process_and_show_semantic_analysis_results(None, True, transcribed_text)
+                    # write_current_status(status_area, "Text Classification...")
+                    # process_and_show_text_classification_results(None, True, transcribed_text)
+                    # write_current_status(status_area,"Done!! Here are the results")
         except Exception as ex:
             st.error("Error occurred during audio transcription and sentiment analysis.")
             st.error(str(ex))
