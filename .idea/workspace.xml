@@ -6,7 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="ec3b2fa7-e5a1-463b-9ff4-d7ce5e5db743" name="Changes" comment="added nltk_data">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -155,7 +155,7 @@
       <workItem from="1688593904787" duration="8936000" />
       <workItem from="1688683158341" duration="415000" />
       <workItem from="1688683596491" duration="59955000" />
-      <workItem from="1688911473170" duration="25683000" />
+      <workItem from="1688911473170" duration="28095000" />
     </task>
     <task id="LOCAL-00001" summary="removed unwanted imports">
       <option name="closed" value="true" />
@@ -389,7 +389,23 @@
       <option name="project" value="LOCAL" />
       <updated>1688967736162</updated>
     </task>
-    <option name="localTasksCounter" value="30" />
+    <task id="LOCAL-00030" summary="added nltk_data">
+      <option name="closed" value="true" />
+      <created>1688968660294</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1688968660294</updated>
+    </task>
+    <task id="LOCAL-00031" summary="added nltk_data">
+      <option name="closed" value="true" />
+      <created>1688968799118</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1688968799118</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -412,12 +428,12 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/main.py</url>
-          <line>37</line>
+          <line>41</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/main.py</url>
-          <line>183</line>
+          <line>197</line>
           <option name="timeStamp" value="5" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -432,7 +448,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/main.py</url>
-          <line>81</line>
+          <line>95</line>
           <option name="timeStamp" value="8" />
         </line-breakpoint>
       </breakpoints>

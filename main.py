@@ -50,12 +50,22 @@ elif action=='Upload an Audio':
 elif action=='Live Audio':
     st.sidebar.markdown('*Audio Recorder*')
     with st.sidebar:
-        recorded_audio_in_bytes = ars.audio_recorder(text="Click to Record", pause_threshold=2.0, sample_rate=41_000)
+        recorded_audio_in_bytes = ars.audio_recorder(text="Click to Record ( 2 sec pause starts analysis)", pause_threshold=2.0, sample_rate=41_000)
 elif action=='Plain Text':
     st.sidebar.markdown('*Plain Text*')
     with st.sidebar:
-        text = st.text_input('Type or paste few sentences to Analyse(>50 char)', key=9)
-    if len(text)>50:
+        text = st.text_area('Type or paste few sentences to Analyse(>50 char)', key=9, height=100)
+        analyse = st.button('Analyse')
+        # preds = {
+        #     'TextBlob': "textblob",
+        #     'roberta-base-go_emotions': 'roberta',
+        #     'bert-base-uncased-emotion': 'bhadresh',
+        #     'Whisper - MultiLingual(Audio)': "whisper"
+        # }
+        #
+        # model_predict = st.selectbox(
+        #     "Select the model to predict : ", list(preds.keys()))
+    if analyse and len(text)>50:
     # Create a TextBlob object
         output = TextBlob(text)
         if output:
