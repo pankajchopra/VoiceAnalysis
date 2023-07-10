@@ -5,6 +5,10 @@ from myUtilityDefs import convertToNewDictionary, print_sentiments, get_sentimen
 from os import path
 import audio_recorder_streamlit as ars
 from textblob import TextBlob
+import nltk
+# nltk.download('wordnet')
+nltk.download('punkt')
+# nltk.download('all-corpora')
 
 st.set_page_config(layout="wide")
 # col1, col2 = st.columns([1,1])
