@@ -221,6 +221,10 @@ def main():
             st.session_state.uploadButtonState = uploadButtonState
     if action == 'Plain Text':
         if analyse and len(text)>10:
+            st.header("Text Classification Results Analysis(Bert-base-uncased-emotion)")
+            sentiment_label, sentiment_score = perform_text_classification_using_bhadresh_savani(text, False)
+            st.markdown("*" + print_sentiments(sentiment_label, sentiment_score) + "*")
+            st.header("TextBlob(rule-based approach) Analysis)")
             sentiment, word_count, sentiment_results = text_blob_sentiments(text)
             st.text_area("Transcribed Text", text, key=5, height=150)
             if word_count :
@@ -234,9 +238,7 @@ def main():
                     st.write(centence)
                     st.write(assessment)
                     st.write('--- - - - - - - - - - - - - - - - - - - - - - - --------------------------------')
-        st.header("Text Classification Results Analysis(Bert-base-uncased-emotion)")
-        sentiment_label, sentiment_score = perform_text_classification_using_bhadresh_savani(text, False)
-        st.markdown("*"+print_sentiments(sentiment_label, sentiment_score)+ "*")
+
 
 if __name__ == "__main__":
     main()
