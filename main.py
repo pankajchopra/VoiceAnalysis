@@ -9,8 +9,8 @@ from textblob import TextBlob
 
 import nltk
 nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('wordnet')
+# nltk.download('stopwords')
+# nltk.download('wordnet')
 nltk.download('vader_lexicon')
 # nltk.download('all-corpora')
 
