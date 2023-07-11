@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ec3b2fa7-e5a1-463b-9ff4-d7ce5e5db743" name="Changes" comment="added nltk_data">
+    <list default="true" id="ec3b2fa7-e5a1-463b-9ff4-d7ce5e5db743" name="Changes" comment="Added information and a draft [presentation]">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/voiceAnalysisServices.py" beforeDir="false" afterPath="$PROJECT_DIR$/voiceAnalysisServices.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -16,11 +17,11 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;
   }
-}]]></component>
+}</component>
   <component name="GithubPullRequestsUISettings">
     <option name="selectedUrlAndAccountId">
       <UrlAndAccount>
@@ -43,7 +44,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "C:/Users/panka/PycharmProjects/VoiceAnalysis/venv",
+    "last_opened_file_path": "C:/Users/panka/PycharmProjects/VoiceAnalysis",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -59,9 +60,9 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\panka\PycharmProjects\VoiceAnalysis" />
       <recent name="C:\Users\panka\PycharmProjects\VoiceAnalysis\venv" />
       <recent name="C:\Users\panka\PycharmProjects\VoiceAnalysis\venv\ntk_data\tokenizers" />
-      <recent name="C:\Users\panka\PycharmProjects\VoiceAnalysis" />
       <recent name="C:\Users\panka\PycharmProjects\pythonProject" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -69,7 +70,7 @@
       <recent name="C:\Users\panka\PycharmProjects\VoiceAnalysis\voices" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.first">
     <configuration name="first" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="pythonProject" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -155,7 +156,8 @@
       <workItem from="1688593904787" duration="8936000" />
       <workItem from="1688683158341" duration="415000" />
       <workItem from="1688683596491" duration="59955000" />
-      <workItem from="1688911473170" duration="30465000" />
+      <workItem from="1688911473170" duration="37205000" />
+      <workItem from="1689022714890" duration="17998000" />
     </task>
     <task id="LOCAL-00001" summary="removed unwanted imports">
       <option name="closed" value="true" />
@@ -413,7 +415,23 @@
       <option name="project" value="LOCAL" />
       <updated>1689001424631</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="Fixed Progress bar and added call_center sample">
+      <option name="closed" value="true" />
+      <created>1689003859524</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1689003859524</updated>
+    </task>
+    <task id="LOCAL-00034" summary="Added information and a draft [presentation]">
+      <option name="closed" value="true" />
+      <created>1689100738869</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1689100738869</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -429,35 +447,42 @@
     <MESSAGE value="added Upload Audio files and other refactoring" />
     <MESSAGE value="added ntk_data" />
     <MESSAGE value="added nltk_data" />
-    <option name="LAST_COMMIT_MESSAGE" value="added nltk_data" />
+    <MESSAGE value="Fixed Progress bar and added call_center sample" />
+    <MESSAGE value="Added information and a draft [presentation]" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added information and a draft [presentation]" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/main.py</url>
-          <line>42</line>
+          <line>60</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/main.py</url>
-          <line>199</line>
+          <line>186</line>
           <option name="timeStamp" value="5" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/voiceAnalysisServices.py</url>
-          <line>64</line>
+          <line>85</line>
           <option name="timeStamp" value="6" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/voiceAnalysisServices.py</url>
-          <line>22</line>
+          <line>44</line>
           <option name="timeStamp" value="7" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/main.py</url>
-          <line>97</line>
+          <line>91</line>
           <option name="timeStamp" value="8" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/main.py</url>
+          <line>223</line>
+          <option name="timeStamp" value="9" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

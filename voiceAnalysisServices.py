@@ -1,6 +1,9 @@
 import speech_recognition as sr
 # import streamlit
 from transformers import pipeline
+from textblob import TextBlob
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+
 # import gradio as gr
 # import whisper
 
@@ -13,12 +16,31 @@ from transformers import pipeline
 distilbert_base_uncased_model="distilbert-base-uncased-finetuned-sst-2-english"
 bhadresh_savani_bert_base_uncased_emotion_model="bhadresh-savani/bert-base-uncased-emotion"
 
+current_model = 'distilbert'
+def perform_sentiment_analysis(text, return_all, model):
+    print(f' Model parameter is {model}')
+    if model=='distilbert':
+        current_model = model
+        print(f' Using Model {model}')
+        return perform_sentiment_analysis_using_distilbert(text, return_all)
+    elif model=='vader':
+        current_model = model
+        print(f' Using Model {model}')
+        return sentiment_analysis_vader(text)
+    elif model=='roberta':
+        current_model = model
+        print(f' Using Model {model}')
+        return perform_sentiment_analysis_using_sam_lowe(text, return_all)
+    else:
+        return perform_sentiment_analysis_using_distilbert(text, return_all)
+
+
 def perform_sentiment_analysis_using_distilbert(text, return_all):
     try:
         model_name = "distilbert-base-uncased-finetuned-sst-2-english"
         sentiment_analysis = pipeline("sentiment-analysis", model=model_name, return_all_scores=return_all)
         results = sentiment_analysis(text)
-        print(f'Sentiment analysis results are {results}')
+        print(f'Sentiment analysis {current_model} results are {results}')
         if(results[0]):
             sentiment_label = results[0]['label']
             sentiment_score = results[0]['score']
@@ -51,14 +73,13 @@ def perform_sentiment_analysis_using_sam_lowe(text, return_all):
     model_name = "SamLowe/roberta-base-go_emotions"
     classification = pipeline("sentiment-analysis", model=model_name, return_all_scores=return_all)
     results = classification(text)
-    print(f'Text Classification Analysis results are {results}')
+    print(f'Semtimental Analysis  {current_model} results are {results}')
     if return_all:
         return results[0]
     else:
         sentiment_label = results[0]['label']
         sentiment_score = results[0]['score']
         return sentiment_label, sentiment_score
-
 
 
 def transcribe_audio_file(audio_file):
@@ -87,6 +108,27 @@ def transcribe_audio_data(audio_data):
     return transcribed_text1
 
 
+def text_blob_sentiments(text):
+    # Create a TextBlob object
+    output = TextBlob(text)
+    if output:
+        sentiments = output.sentiment
+        # Extract words from object
+        word_count = output.word_counts
+        # print(sentiments, word_count)
+        sentiment_results = dict()
+        i = 1
+        for sentence in output.sentences:
+            print(sentence)
+            # print(sentence.string)
+            sentiment_results['sentence{}'.format(i)] = sentence.string
+            sentiment_results[f'sentence_assessment{i}'.format(i)] = sentence.sentiment_assessments
+            i = i+1
+        # print(sentiment_results)
+        return sentiments, word_count, sentiment_results
+
+
+# st.write(f'Sentence Polarity:{sentence.sentiment["polarity"]}')
 def analyze_sentiment(text):
     sentiment_analysis = pipeline("sentiment-analysis", framework="pt", model="SamLowe/roberta-base-go_emotions")
     results = sentiment_analysis(text)
@@ -114,4 +156,31 @@ def analyze_sentiment(text):
 #     sentiment_output = display_sentiment_results(sentiment_results, sentiment_option)
 #
 #     return lang.upper(), result.text, sentiment_output
+
+
+# function to print sentiments
+# of the sentence.
+def sentiment_analysis_vader(sentence):
+    # Create a SentimentIntensityAnalyzer object.
+    sid_obj = SentimentIntensityAnalyzer()
+
+    # polarity_scores method of SentimentIntensityAnalyzer
+    # object gives a sentiment dictionary.
+    # which contains pos, neg, neu, and compound scores.
+    sentiment_dict = sid_obj.polarity_scores(sentence)
+    print(f'Semtimental Analysis  {current_model} results are {sentiment_dict}')
+    if sentiment_dict:
+        # decide sentiment as positive, negative and neutral
+        if sentiment_dict['compound'] >= 0.05:
+            sentiment_label = 'Positive'
+            sentiment_score = sentiment_dict['pos']
+        elif sentiment_dict['compound'] <= - 0.05:
+            sentiment_label = 'Negative'
+            sentiment_score = sentiment_dict['neg']
+        else:
+            sentiment_label = 'Neutral'
+            sentiment_score = sentiment_dict['neu']
+        return sentiment_label, sentiment_score
+    else:
+        return 'bad_data', 'Bad Data or Insufficient Data'
 
