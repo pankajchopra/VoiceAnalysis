@@ -46,7 +46,7 @@ with st.sidebar:
         st.download_button("Download",data=file, file_name='Sentiments_Analysis.pptx', mime='application/msword')
     # colm1, colm2 = st.columns([1,2])
     preds = {
-        'TextBlob Based ': "textblob",
+        # 'TextBlob Based ': "textblob",
         'roberta-base-go_emotions': 'roberta',
         'distilbert-base-uncased-finetuned': 'distilbert',
         'VADER Based Sentiment Analysis': 'vader',
