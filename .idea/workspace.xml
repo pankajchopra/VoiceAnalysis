@@ -4,8 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ec3b2fa7-e5a1-463b-9ff4-d7ce5e5db743" name="Changes" comment="Added Zip File">
-      <change afterPath="$PROJECT_DIR$/Sentiments_Analysis.pptx" afterDir="false" />
+    <list default="true" id="ec3b2fa7-e5a1-463b-9ff4-d7ce5e5db743" name="Changes" comment="Added pptx and pdf">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -157,7 +156,7 @@
       <workItem from="1688683158341" duration="415000" />
       <workItem from="1688683596491" duration="59955000" />
       <workItem from="1688911473170" duration="37205000" />
-      <workItem from="1689022714890" duration="21536000" />
+      <workItem from="1689022714890" duration="22837000" />
     </task>
     <task id="LOCAL-00001" summary="removed unwanted imports">
       <option name="closed" value="true" />
@@ -471,7 +470,15 @@
       <option name="project" value="LOCAL" />
       <updated>1689123718051</updated>
     </task>
-    <option name="localTasksCounter" value="40" />
+    <task id="LOCAL-00040" summary="Added pptx and pdf">
+      <option name="closed" value="true" />
+      <created>1689126697465</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1689126697465</updated>
+    </task>
+    <option name="localTasksCounter" value="41" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -493,19 +500,20 @@
     <MESSAGE value="updated  requirements.txt" />
     <MESSAGE value="removed stopword and wordnet" />
     <MESSAGE value="Added Zip File" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added Zip File" />
+    <MESSAGE value="Added pptx and pdf" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added pptx and pdf" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/main.py</url>
-          <line>61</line>
+          <line>63</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/main.py</url>
-          <line>187</line>
+          <line>189</line>
           <option name="timeStamp" value="5" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -520,12 +528,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/main.py</url>
-          <line>92</line>
+          <line>94</line>
           <option name="timeStamp" value="8" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/main.py</url>
-          <line>228</line>
+          <line>230</line>
           <option name="timeStamp" value="9" />
         </line-breakpoint>
       </breakpoints>

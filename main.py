@@ -39,9 +39,10 @@ with st.sidebar:
                      and sentiment analysis techniques to transcribe the audio 
                      and determine the sentiment expressed within it.""")
     st.write(
-        '''A brief description of Sematic Analysis and models. Check a presentation  [link](https://docs.google.com/presentation/d/e/2PACX-1vTzSLasf4BF4oeAOi66N0fXYzICBlJA3_PyLZAOjqNhJ8GuTm5V2l5EJlknS7Xn2Z7PNkTYa1zNpPMz/pub?start=false&loop=false&delayms=3000)  "
-        " and  Check a presentation  [download](https://voiceanalysis-pkchopra.streamlit.app/Sentiments_Analysis.pptx) 
-        " and  Check a presentation  [download](https://voiceanalysis-pkchopra.streamlit.app/Sentiments_Analysis.pptx)''')
+        '''A brief description of Sematic Analysis and models. Check a presentation  
+        [link](https://docs.google.com/presentation/d/e/2PACX-1vTzSLasf4BF4oeAOi66N0fXYzICBlJA3_PyLZAOjqNhJ8GuTm5V2l5EJlknS7Xn2Z7PNkTYa1zNpPMz/pub?start=false&loop=false&delayms=3000)''')
+    with open("Sentiments_Analysis.pptx", "rb") as file:
+        st.download_button("download presentation",data=file, file_name='Sentiments_Analysis.pptx',mime='application/msword' )
     # colm1, colm2 = st.columns([1,2])
     preds = {
         # 'TextBlob': "textblob",
