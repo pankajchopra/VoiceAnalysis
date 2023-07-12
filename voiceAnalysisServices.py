@@ -1,10 +1,8 @@
 import speech_recognition as sr
 import streamlit as st
-# import streamlit
 from transformers import pipeline
 from textblob import TextBlob
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-import plotly.express as px
 import flair
 
 # import gradio as gr
