@@ -18,7 +18,30 @@ distilbert_base_uncased_model="distilbert-base-uncased-finetuned-sst-2-english"
 bhadresh_savani_bert_base_uncased_emotion_model="bhadresh-savani/bert-base-uncased-emotion"
 
 
+def load_model_sid():
+    global sid_obj
+    sid_obj = SentimentIntensityAnalyzer()
 
+def load_model_flair():
+    global flair_sentiment
+    flair_sentiment = flair.models.TextClassifier.load('en-sentiment')
+def load_model_distilbert():
+    global distilbert_sentiment_analysis
+    model_name = "distilbert-base-uncased-finetuned-sst-2-english"
+    distilbert_sentiment_analysis = pipeline("sentiment-analysis", model=model_name, return_all_scores=False)
+def load_model_samLowe():
+    model_name = "SamLowe/roberta-base-go_emotions"
+    global sam_lowe_classification
+    sam_lowe_classification = pipeline("sentiment-analysis", model=model_name, return_all_scores=False)
+def load_model_flair():
+    global flair_sentiment
+    flair_sentiment = flair.models.TextClassifier.load('en-sentiment')
+
+# Being used multiple times
+def load_model_savani():
+    global savani_classification
+    model_name = "bhadresh-savani/bert-base-uncased-emotion"
+    savani_classification = pipeline("text-classification", model=model_name, return_all_scores=False)
 
 def perform_sentiment_analysis(text, return_all, model):
     if 'current_model' not in st.session_state:
@@ -41,14 +64,24 @@ def perform_sentiment_analysis(text, return_all, model):
         st.session_state['current_model'] = model
         print(f' Using Model {model}')
         return perform_sentiment_analysis_using_flair(text, return_all)
+    elif model=='textblob':
+        print(f' Using Model {model}')
+        st.session_state['current_model'] = model
+        print(f' Using Model {model}')
+        return perform_sentiment_analysis_using_textblob(text)
     else:
         return perform_sentiment_analysis_using_distilbert(text, return_all)
 
 
 def perform_sentiment_analysis_using_flair(text, return_all):
     try:
+        if 'flair_sentiment' in globals():
+            print('found flair_sentiment in global')
+        else:
+            print('Not found flair_sentiment global, loading...')
+            load_model_flair()
         #download mode
-        flair_sentiment = flair.models.TextClassifier.load('en-sentiment')
+        # flair_sentiment = flair.models.TextClassifier.load('en-sentiment')
         s = flair.data.Sentence(text)
         flair_sentiment.predict(s)
         print(s.score)
@@ -71,12 +104,33 @@ def perform_sentiment_analysis_using_flair(text, return_all):
         return "error", str(ex)
 
 
+
+def perform_sentiment_analysis_using_textblob(text):
+    try:
+        print('Nothing to Load for textBlob')
+        sentiment_label, sentiment_score = text_blob_sentiments(text)
+        print(f'Textpad label{sentiment_label}')
+        print(f'Textpad score{sentiment_score}')
+        model = st.session_state['current_model']
+        print(f'Sentiment analysis {model} results are {sentiment_label} ({sentiment_score})')
+        return sentiment_label, sentiment_score
+    except Exception as ex:
+        print("Error occurred during .. perform_sentiment_analysis_using_distilbert")
+        print(str(ex))
+        return "error", str(ex)
+
+
 def perform_sentiment_analysis_using_distilbert(text, return_all):
     current_model = st.session_state['current_model']
     try:
-        model_name = "distilbert-base-uncased-finetuned-sst-2-english"
-        sentiment_analysis = pipeline("sentiment-analysis", model=model_name, return_all_scores=return_all)
-        results = sentiment_analysis(text)
+        if 'distilbert_sentiment_analysis' in globals():
+            print('found distilbert_sentiment_analysis in global')
+        else:
+            print('Not found distilbert_sentiment_analysis global, loading...')
+            load_model_distilbert()
+        # model_name = "distilbert-base-uncased-finetuned-sst-2-english"
+        # sentiment_analysis = pipeline("sentiment-analysis", model=model_name, return_all_scores=return_all)
+        results = distilbert_sentiment_analysis(text)
         print(f'Sentiment analysis {current_model} results are {results}')
         if return_all:
             return results[0]
@@ -94,9 +148,15 @@ def perform_sentiment_analysis_using_distilbert(text, return_all):
 
 
 def perform_text_classification_using_bhadresh_savani(text, return_all):
-    model_name = "bhadresh-savani/bert-base-uncased-emotion"
-    classification = pipeline("text-classification", model=model_name, return_all_scores=return_all)
-    results = classification(text)
+    # model_name = "bhadresh-savani/bert-base-uncased-emotion"
+    # savani_classification = pipeline("text-classification", model=model_name, return_all_scores=return_all)
+    if 'savani_classification' in globals():
+        print('found savani_classification in global')
+    else:
+        print ('Not found savani_classificationin global, loading')
+        load_model_savani()
+
+    results = savani_classification(text)
     print(f'Text Classification Analysis results are {results}')
     if return_all:
         return results[0]
@@ -111,9 +171,15 @@ def perform_text_classification_using_bhadresh_savani(text, return_all):
 
 def perform_sentiment_analysis_using_sam_lowe(text, return_all):
     current_model = st.session_state['current_model']
-    model_name = "SamLowe/roberta-base-go_emotions"
-    classification = pipeline("sentiment-analysis", model=model_name, return_all_scores=return_all)
-    results = classification(text)
+    if 'sam_lowe_classification' in globals():
+        print('found sam_lowe_classification in global')
+    else:
+        print('Not found sam_lowe_classification global, loading...')
+        load_model_samLowe()
+    # model_name = "SamLowe/roberta-base-go_emotions"
+    # sam_lowe_classification = pipeline("sentiment-analysis", model=model_name, return_all_scores=return_all)
+
+    results = sam_lowe_classification(text)
     print(f'Sentimental Analysis  {current_model} results are {results}')
     if return_all:
         return results[0]
@@ -153,20 +219,28 @@ def text_blob_sentiments(text):
     # Create a TextBlob object
     output = TextBlob(text)
     if output:
-        sentiments = output.sentiment
-        # Extract words from object
-        word_count = output.word_counts
-        # print(sentiments, word_count)
-        sentiment_results = dict()
-        i = 1
-        for sentence in output.sentences:
-            print(sentence)
-            # print(sentence.string)
-            sentiment_results['sentence{}'.format(i)] = sentence.string
-            sentiment_results[f'sentence_assessment{i}'.format(i)] = sentence.sentiment_assessments
-            i = i+1
-        # print(sentiment_results)
-        return sentiments, word_count, sentiment_results
+        polarity = output.sentiment.polarity
+        subjectivity = output.subjectivity
+        if polarity < 0 < subjectivity:
+            return 'NEGATIVE', polarity
+        elif polarity==0:
+            return 'NEUTRAL', polarity
+        else:
+            return 'POSITIVE', polarity
+
+        # # Extract words from object
+        # word_count = output.word_counts
+        # # print(sentiments, word_count)
+        # sentiment_results = dict()
+        # i = 1
+        # for sentence in output.sentences:
+        #     print(sentence)
+        #     # print(sentence.string)
+        #     sentiment_results['sentence{}'.format(i)] = sentence.string
+        #     sentiment_results[f'sentence_assessment{i}'.format(i)] = sentence.sentiment_assessments
+        #     i = i+1
+        # # print(sentiment_results)
+        # return sentiments, word_count, sentiment_results
 
 
 # st.write(f'Sentence Polarity:{sentence.sentiment["polarity"]}')

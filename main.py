@@ -1,7 +1,7 @@
 import time
 import traceback
 import streamlit as st
-from voiceAnalysisServices import perform_sentiment_analysis_using_distilbert, transcribe_audio_file, perform_text_classification_using_bhadresh_savani, perform_sentiment_analysis, text_blob_sentiments
+from voiceAnalysisServices import transcribe_audio_file, perform_text_classification_using_bhadresh_savani, perform_sentiment_analysis, text_blob_sentiments
 from myUtilityDefs import convertToNewDictionary, print_sentiments, get_sentiment_emoji
 from os import path
 import audio_recorder_streamlit as ars
@@ -41,12 +41,12 @@ with st.sidebar:
     st.write(
         '''A brief description of Sematic Analysis and models. Check a presentation  
         [link](https://docs.google.com/presentation/d/e/2PACX-1vTzSLasf4BF4oeAOi66N0fXYzICBlJA3_PyLZAOjqNhJ8GuTm5V2l5EJlknS7Xn2Z7PNkTYa1zNpPMz/pub?start=false&loop=false&delayms=3000)''')
-    pptx = path.join(path.dirname(path.realpath(__file__)), "Sentiments_Analysis.pptx")
-    with open(pptx, "rb") as file:
-        st.download_button("Download",data=file, file_name='Sentiments_Analysis.pptx', mime='application/msword')
+    # pptx = path.join(path.dirname(path.realpath(__file__)), "Sentiments_Analysis.pptx")
+    # with open(pptx, "rb") as file:
+    #     st.download_button("Download",data=file, file_name='Sentiments_Analysis.pptx', mime='application/msword')
     # colm1, colm2 = st.columns([1,2])
     preds = {
-        # 'TextBlob Based ': "textblob",
+        'TextBlob Based Sentiment Analysis': "textblob",
         'roberta-base-go_emotions': 'roberta',
         'distilbert-base-uncased-finetuned': 'distilbert',
         'VADER Based Sentiment Analysis': 'vader',
@@ -67,7 +67,7 @@ with st.sidebar:
         process_sample1_button = st.button("Sample 1", key=1 )
         process_sample2_button = st.button("Call Center Sample", key=2)
         process_sample3_button = st.button("Sample 3", key=3)
-    elif action=='Upload an Audio':
+    elif action == 'Upload an Audio':
         col1, col2 = st.columns([1,2])
         col1.markdown("**Upload an audio file (format = wav only) **")
         col2.markdown("*Do not upload music wav file it will give error(s).*")
@@ -231,7 +231,7 @@ def main():
             process_and_show_text_classification_results(None, True, text)
             # st.markdown("*" + print_sentiments(sentiment_label, sentiment_score) + "*")
             # st.header("TextBlob(rule-based approach) Analysis")
-            sentiment, word_count, sentiment_results = text_blob_sentiments(text)
+            # sentiment, word_count, sentiment_results = text_blob_sentiments(text)
             # st.text_area("Transcribed Text", text, key=5, height=150)
             # if word_count :
             #     st.text_area("Word Count", word_count, key=6, height=150)
