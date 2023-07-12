@@ -1,8 +1,11 @@
 import speech_recognition as sr
+import streamlit as st
 # import streamlit
 from transformers import pipeline
 from textblob import TextBlob
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+import plotly.express as px
+import flair
 
 # import gradio as gr
 # import whisper
@@ -16,37 +19,76 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 distilbert_base_uncased_model="distilbert-base-uncased-finetuned-sst-2-english"
 bhadresh_savani_bert_base_uncased_emotion_model="bhadresh-savani/bert-base-uncased-emotion"
 
-current_model = 'distilbert'
+
+
+
 def perform_sentiment_analysis(text, return_all, model):
+    if 'current_model' not in st.session_state:
+        st.session_state['current_model'] = 'distilbert'
     print(f' Model parameter is {model}')
     if model=='distilbert':
-        current_model = model
+        st.session_state['current_model'] = model
         print(f' Using Model {model}')
         return perform_sentiment_analysis_using_distilbert(text, return_all)
     elif model=='vader':
-        current_model = model
+        st.session_state['current_model'] = model
         print(f' Using Model {model}')
         return sentiment_analysis_vader(text)
     elif model=='roberta':
-        current_model = model
+        st.session_state['current_model'] = model
         print(f' Using Model {model}')
         return perform_sentiment_analysis_using_sam_lowe(text, return_all)
+    elif model=='flair':
+        print(f' Using Model {model}')
+        st.session_state['current_model'] = model
+        print(f' Using Model {model}')
+        return perform_sentiment_analysis_using_flair(text, return_all)
     else:
         return perform_sentiment_analysis_using_distilbert(text, return_all)
 
 
+def perform_sentiment_analysis_using_flair(text, return_all):
+    try:
+        #download mode
+        flair_sentiment = flair.models.TextClassifier.load('en-sentiment')
+        s = flair.data.Sentence(text)
+        flair_sentiment.predict(s)
+        print(s.score)
+        print(s.get_label().value)
+        total_sentiment = s.labels
+        model = st.session_state['current_model']
+        print(f'Sentiment analysis {model} results are {total_sentiment}')
+        if return_all:
+            return s
+        else:
+            if s:
+                sentiment_label = s.get_label().value
+                sentiment_score = s.score
+                return sentiment_label, sentiment_score
+            else:
+                return 'bad_data', 'Not Enough or Bad Data'
+    except Exception as ex:
+        print("Error occurred during .. perform_sentiment_analysis_using_distilbert")
+        print(str(ex))
+        return "error", str(ex)
+
+
 def perform_sentiment_analysis_using_distilbert(text, return_all):
+    current_model = st.session_state['current_model']
     try:
         model_name = "distilbert-base-uncased-finetuned-sst-2-english"
         sentiment_analysis = pipeline("sentiment-analysis", model=model_name, return_all_scores=return_all)
         results = sentiment_analysis(text)
         print(f'Sentiment analysis {current_model} results are {results}')
-        if(results[0]):
-            sentiment_label = results[0]['label']
-            sentiment_score = results[0]['score']
-            return sentiment_label, sentiment_score
+        if return_all:
+            return results[0]
         else:
-            return 'bad_data', 'Not Enough or Bad Data'
+            if(results[0]):
+                sentiment_label = results[0]['label']
+                sentiment_score = results[0]['score']
+                return sentiment_label, sentiment_score
+            else:
+                return 'bad_data', 'Not Enough or Bad Data'
     except Exception as ex:
         print("Error occurred during .. perform_sentiment_analysis_using_distilbert")
         print(str(ex))
@@ -70,10 +112,11 @@ def perform_text_classification_using_bhadresh_savani(text, return_all):
 
 
 def perform_sentiment_analysis_using_sam_lowe(text, return_all):
+    current_model = st.session_state['current_model']
     model_name = "SamLowe/roberta-base-go_emotions"
     classification = pipeline("sentiment-analysis", model=model_name, return_all_scores=return_all)
     results = classification(text)
-    print(f'Semtimental Analysis  {current_model} results are {results}')
+    print(f'Sentimental Analysis  {current_model} results are {results}')
     if return_all:
         return results[0]
     else:
@@ -161,6 +204,7 @@ def analyze_sentiment(text):
 # function to print sentiments
 # of the sentence.
 def sentiment_analysis_vader(sentence):
+    current_model = st.session_state['current_model']
     # Create a SentimentIntensityAnalyzer object.
     sid_obj = SentimentIntensityAnalyzer()
 

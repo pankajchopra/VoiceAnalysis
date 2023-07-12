@@ -41,14 +41,16 @@ with st.sidebar:
     st.write(
         '''A brief description of Sematic Analysis and models. Check a presentation  
         [link](https://docs.google.com/presentation/d/e/2PACX-1vTzSLasf4BF4oeAOi66N0fXYzICBlJA3_PyLZAOjqNhJ8GuTm5V2l5EJlknS7Xn2Z7PNkTYa1zNpPMz/pub?start=false&loop=false&delayms=3000)''')
-    with open("Sentiments_Analysis.pptx", "rb") as file:
-        st.download_button("download presentation",data=file, file_name='Sentiments_Analysis.pptx',mime='application/msword' )
+    pptx = path.join(path.dirname(path.realpath(__file__)), "Sentiments_Analysis.pptx")
+    with open(pptx, "rb") as file:
+        st.download_button("Download",data=file, file_name='Sentiments_Analysis.pptx', mime='application/msword')
     # colm1, colm2 = st.columns([1,2])
     preds = {
-        # 'TextBlob': "textblob",
+        'TextBlob Based ': "textblob",
         'roberta-base-go_emotions': 'roberta',
         'distilbert-base-uncased-finetuned': 'distilbert',
-        'VADER Sentiment Analysis': 'vader'
+        'VADER Based Sentiment Analysis': 'vader',
+        'FLAIR Based Sentiment Analysis': 'flair'
         # ,'Whisper - MultiLingual(Audio)': "whisper"
     }
     model_select = st.selectbox(
@@ -86,7 +88,7 @@ def write_current_status(status_area, text):
 
 
 def process_and_show_semantic_analysis_results(audio_file, transcribed, transcribed_text, model):
-    if not transcribed:
+    if not transcribed and audio_file:
         st.write(f'Processing {audio_file}...' )
         transcribed_text = transcribe_audio_file(audio_file)
         # st.header("Transcribed Text")
@@ -224,23 +226,24 @@ def main():
             st.session_state.uploadButtonState = uploadButtonState
     if action == 'Plain Text':
         if analyse and len(text)>10:
-            st.header("Text Classification Results Analysis(Bert-base-uncased-emotion)")
-            sentiment_label, sentiment_score = perform_text_classification_using_bhadresh_savani(text, False)
-            st.markdown("*" + print_sentiments(sentiment_label, sentiment_score) + "*")
-            st.header("TextBlob(rule-based approach) Analysis)")
+            # st.header("Seman Classification Results Analysis(Bert-base-uncased-emotion)")
+            process_and_show_semantic_analysis_results(None, True, text, model_predict)
+            process_and_show_text_classification_results(None, True, text)
+            # st.markdown("*" + print_sentiments(sentiment_label, sentiment_score) + "*")
+            # st.header("TextBlob(rule-based approach) Analysis")
             sentiment, word_count, sentiment_results = text_blob_sentiments(text)
-            st.text_area("Transcribed Text", text, key=5, height=150)
-            if word_count :
-                st.text_area("Word Count", word_count, key=6, height=150)
-            if sentiment:
-                st.markdown("**Textblob Sentiment**")
-                st.markdown(sentiment)
-            if sentiment_results :
-                st.markdown("**Sentiment  per Statement**")
-                for centence, assessment in sentiment_results.items():
-                    st.write(centence)
-                    st.write(assessment)
-                    st.write('--- - - - - - - - - - - - - - - - - - - - - - - --------------------------------')
+            # st.text_area("Transcribed Text", text, key=5, height=150)
+            # if word_count :
+            #     st.text_area("Word Count", word_count, key=6, height=150)
+            # if sentiment:
+            #     st.markdown("**Textblob Sentiment**")
+            #     st.markdown(sentiment)
+            # if sentiment_results :
+            #     st.markdown("**Sentiment  per Statement**")
+            #     for centence, assessment in sentiment_results.items():
+            #         st.write(centence)
+            #         st.write(assessment)
+            #         st.write('--- - - - - - - - - - - - - - - - - - - - - - - --------------------------------')
 
 
 if __name__ == "__main__":
