@@ -222,7 +222,6 @@ def doActualthings(status_area,audio_file, model):
         progressBar.progress(40, 'Semantic Analysis..')
         write_current_status(status_area, f'''Semantic Analysis using {model_predict} 
                                             File Name: {audio_file}...''')
-
         process_and_show_semantic_analysis_results(None, True, transcribed_text, model)
         if model_predict != 'All':
             progressBar.progress(70, 'Textual Classification..')
@@ -298,7 +297,7 @@ def main():
         if analyse and len(text)>10:
             # st.header("Seman Classification Results Analysis(Bert-base-uncased-emotion)")
             process_and_show_semantic_analysis_results(None, True, text, model_predict)
-            print(f'model_predict:{model_predict}')
+            # print(f'model_predict:{model_predict}')
             if model_predict != 'All':
                 process_and_show_text_classification_results(None, True, text)
             # st.markdown("*" + print_sentiments(sentiment_label, sentiment_score) + "*")
