@@ -224,9 +224,10 @@ def doActualthings(status_area,audio_file, model):
                                             File Name: {audio_file}...''')
 
         process_and_show_semantic_analysis_results(None, True, transcribed_text, model)
-        progressBar.progress(70, 'Textual Classification..')
-        write_current_status(status_area, f'Text Classification of {audio_file}...')
-        process_and_show_text_classification_results(audio_file, True, transcribed_text)
+        if model_predict != 'All':
+            progressBar.progress(70, 'Textual Classification..')
+            write_current_status(status_area, f'Text Classification of {audio_file}...')
+            process_and_show_text_classification_results(audio_file, True, transcribed_text)
         progressBar.progress(90, 'Textual Classification Done...')
         # write_current_status(status_area, 'Finished Processing!! ')
         progressBar.progress(100, 'Done, Finished Processing!!')
@@ -297,7 +298,9 @@ def main():
         if analyse and len(text)>10:
             # st.header("Seman Classification Results Analysis(Bert-base-uncased-emotion)")
             process_and_show_semantic_analysis_results(None, True, text, model_predict)
-            process_and_show_text_classification_results(None, True, text)
+            print(f'model_predict:{model_predict}')
+            if model_predict != 'All':
+                process_and_show_text_classification_results(None, True, text)
             # st.markdown("*" + print_sentiments(sentiment_label, sentiment_score) + "*")
             # st.header("TextBlob(rule-based approach) Analysis")
             # sentiment, word_count, sentiment_results = text_blob_sentiments(text)
