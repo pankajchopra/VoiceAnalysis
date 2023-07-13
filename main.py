@@ -5,7 +5,6 @@ from voiceAnalysisServices import transcribe_audio_file, perform_text_classifica
 from myUtilityDefs import convertToNewDictionary, print_sentiments, get_sentiment_emoji
 from os import path
 import audio_recorder_streamlit as ars
-import json
 
 import nltk
 nltk.download('punkt')
@@ -25,11 +24,18 @@ uploadButtonState = st.session_state.get("enable_upload", {"value": True})
 # st.session_state["action_radio"].disabled = False
 # st.session_state['upload'].disabled = False
 
-st.markdown(' # AI to Detect Sentiment in the Audio!')
-st.markdown('*Pankaj Kumar Chopra*')
+st.markdown(' # FA/Client Sentiment Analysis!')
+# footer = st.footer('Author: *Pankaj Kumar Chopra*')
+# st.markdown(
+#     """
+#     <style>
+#     #MainMenu {visibility: hidden;}
+#     footer {visibility: visible;}
+#     </style>
+#     """,
+#     unsafe_allow_html=True
+# )
 # st.image('work-in-progress.png', width=100)
-
-
 
 with st.sidebar:
     #  app.py
