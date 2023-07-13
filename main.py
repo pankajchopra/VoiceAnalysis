@@ -100,7 +100,8 @@ def process_and_show_semantic_analysis_results(audio_file, transcribed, transcri
     # st.markdown(" # Analysing...")
     return_all = False
     if model == 'All':
-        print('Doing to display all')
+        st.write('''Sentiment analysis comparison for three NLP tools
+                    Vader vs Flair vs TextBlob [Click Here](https://aashishmehta.com/sentiment-analysis-comparison/)''')
         result = perform_sentiment_analysis(transcribed_text, return_all, model)
         col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 1])
         # print(result)
