@@ -22,26 +22,35 @@ def load_model_sid():
     global sid_obj
     sid_obj = SentimentIntensityAnalyzer()
 
+
 def load_model_flair():
     global flair_sentiment
     flair_sentiment = flair.models.TextClassifier.load('en-sentiment')
+
+
 def load_model_distilbert():
     global distilbert_sentiment_analysis
     model_name = "distilbert-base-uncased-finetuned-sst-2-english"
     distilbert_sentiment_analysis = pipeline("sentiment-analysis", model=model_name, return_all_scores=False)
-def load_model_samLowe():
+
+
+def load_model_sam_lowe():
     model_name = "SamLowe/roberta-base-go_emotions"
     global sam_lowe_classification
     sam_lowe_classification = pipeline("sentiment-analysis", model=model_name, return_all_scores=False)
+
+
 def load_model_flair():
     global flair_sentiment
     flair_sentiment = flair.models.TextClassifier.load('en-sentiment')
+
 
 # Being used multiple times
 def load_model_savani():
     global savani_classification
     model_name = "bhadresh-savani/bert-base-uncased-emotion"
     savani_classification = pipeline("text-classification", model=model_name, return_all_scores=False)
+
 
 def perform_sentiment_analysis(text, return_all, model):
     if 'current_model' not in st.session_state:
@@ -54,7 +63,7 @@ def perform_sentiment_analysis(text, return_all, model):
     elif model=='vader':
         st.session_state['current_model'] = model
         print(f' Using Model {model}')
-        return sentiment_analysis_vader(text)
+        return perform_sentiment_analysis_using_vader(text)
     elif model=='roberta':
         st.session_state['current_model'] = model
         print(f' Using Model {model}')
@@ -69,6 +78,11 @@ def perform_sentiment_analysis(text, return_all, model):
         st.session_state['current_model'] = model
         print(f' Using Model {model}')
         return perform_sentiment_analysis_using_textblob(text)
+    elif model=='All':
+        print(f' Using Model {model}')
+        st.session_state['current_model'] = model
+        print(f' Using Model {model}')
+        return perform_sentiment_analysis_all(text)
     else:
         return perform_sentiment_analysis_using_distilbert(text, return_all)
 
@@ -103,6 +117,21 @@ def perform_sentiment_analysis_using_flair(text, return_all):
         print(str(ex))
         return "error", str(ex)
 
+
+def perform_sentiment_analysis_all(text):
+    print('In perform_sentiment_analysis_all')
+    sentiment_and_scores = dict()
+    sentiment_label, sentiment_score = perform_sentiment_analysis_using_textblob(text)
+    sentiment_and_scores['textblob']={ 'sentiment_label':sentiment_label,'sentiment_score':sentiment_score}
+    sentiment_label, sentiment_score = perform_sentiment_analysis_using_flair(text, False)
+    sentiment_and_scores['flair']={ 'sentiment_label':sentiment_label,'sentiment_score':sentiment_score}
+    sentiment_label, sentiment_score = perform_sentiment_analysis_using_vader(text)
+    sentiment_and_scores['vader']={ 'sentiment_label':sentiment_label,'sentiment_score':sentiment_score}
+    sentiment_label, sentiment_score = perform_sentiment_analysis_using_sam_lowe(text, False)
+    sentiment_and_scores['roberta']={ 'sentiment_label':sentiment_label,'sentiment_score':sentiment_score}
+    sentiment_label, sentiment_score = perform_sentiment_analysis_using_distilbert(text, False)
+    sentiment_and_scores['distilbert']={ 'sentiment_label':sentiment_label,'sentiment_score':sentiment_score}
+    return sentiment_and_scores
 
 
 def perform_sentiment_analysis_using_textblob(text):
@@ -175,7 +204,7 @@ def perform_sentiment_analysis_using_sam_lowe(text, return_all):
         print('found sam_lowe_classification in global')
     else:
         print('Not found sam_lowe_classification global, loading...')
-        load_model_samLowe()
+        load_model_sam_lowe()
     # model_name = "SamLowe/roberta-base-go_emotions"
     # sam_lowe_classification = pipeline("sentiment-analysis", model=model_name, return_all_scores=return_all)
 
@@ -275,7 +304,7 @@ def analyze_sentiment(text):
 
 # function to print sentiments
 # of the sentence.
-def sentiment_analysis_vader(sentence):
+def perform_sentiment_analysis_using_vader(sentence):
     current_model = st.session_state['current_model']
     # Create a SentimentIntensityAnalyzer object.
     sid_obj = SentimentIntensityAnalyzer()
@@ -284,7 +313,7 @@ def sentiment_analysis_vader(sentence):
     # object gives a sentiment dictionary.
     # which contains pos, neg, neu, and compound scores.
     sentiment_dict = sid_obj.polarity_scores(sentence)
-    print(f'Semtimental Analysis  {current_model} results are {sentiment_dict}')
+    print(f'Semtiment Analysis  {current_model} results are {sentiment_dict}')
     if sentiment_dict:
         # decide sentiment as positive, negative and neutral
         if sentiment_dict['compound'] >= 0.05:
