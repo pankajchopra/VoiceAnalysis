@@ -4,17 +4,17 @@ import flair
 
 
 class LoadModules:
-    all_modules = None
+    all_modules = dict()
 
     def __init__(self, loadAllModule):
-        print ('in LoadModules constructor')
+        print('in LoadModules constructor')
         if loadAllModule:
             self.all_modules = self.load_all_models();
 
     def load_model_vader(self):
-        self.vader_obj = SentimentIntensityAnalyzer()
         try:
-            self.vader_obj = SentimentIntensityAnalyzer()
+            LoadModules.all_modules['vader'] = SentimentIntensityAnalyzer()
+            return LoadModules.all_modules['vader']
         except Exception as ex:
             print("Error occurred during .. load_model_vader")
             print(str(ex))
@@ -22,8 +22,8 @@ class LoadModules:
 
     def load_model_flair(self):
         try:
-            self.all_modules['flair'] = flair.models.TextClassifier.load('en-sentiment')
-            return self.all_modules['flair']
+            LoadModules.all_modules['flair'] = flair.models.TextClassifier.load('en-sentiment')
+            return LoadModules.all_modules['flair']
         except Exception as ex:
             print("Error occurred during .. load_model_flair")
             print(str(ex))
@@ -31,7 +31,10 @@ class LoadModules:
 
     def load_model_distilbert(self):
         try:
-            return pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english", top_k=1)
+            LoadModules.all_modules['distilbert'] = pipeline("sentiment-analysis",
+                                                             model="distilbert-base-uncased-finetuned-sst-2-english",
+                                                             top_k=1)
+            return LoadModules.all_modules['distilbert']
         except Exception as ex:
             print("Error occurred during .. load_model_distilbert")
             print(str(ex))
@@ -39,39 +42,34 @@ class LoadModules:
 
     def load_model_sam_lowe(self, return_all_score):
         try:
-            return pipeline("sentiment-analysis", model="SamLowe/roberta-base-go_emotions", return_all_scores=return_all_score)
+            LoadModules.all_modules['sam_lowe'] = pipeline("sentiment-analysis",
+                                                           model="SamLowe/roberta-base-go_emotions",
+                                                           return_all_scores=return_all_score)
+            return LoadModules.all_modules['sam_lowe']
         except Exception as ex:
             print("Error occurred during .. load_model_sam_lowe")
             print(str(ex))
             return "error", str(ex)
 
-    def load_model_flair(self):
-        try:
-            return flair.models.TextClassifier.load('en-sentiment')
-        except Exception as ex:
-            print("Error occurred during .. load_model_flair")
-            print(str(ex))
-            return "error", str(ex)
-
-    # Being used multiple times
-
     def load_model_savani(self):
         try:
-            return pipeline("text-classification", model="bhadresh-savani/bert-base-uncased-emotion",
-                            return_all_scores=False)
+            LoadModules.all_modules['savani'] = pipeline("text-classification",
+                                                         model="bhadresh-savani/bert-base-uncased-emotion",
+                                                         return_all_scores=False)
+            return LoadModules.all_modules['savani']
         except Exception as ex:
             print("Error occurred during .. load_model_savani")
             print(str(ex))
             return "error", str(ex)
 
     def load_all_models(self):
-        print ('in load_all_models()')
+        print('in load_all_models()')
         result = dict()
         result["flair"] = self.load_model_flair()
         result["distilbert"] = self.load_model_distilbert()
         result["vader"] = self.load_model_sid()
         result["savani"] = self.savani_classification = self.load_model_savani(False)
-        result["sam_low"] = self.load_model_sam_lowe()
+        result["sam_lowe"] = self.load_model_sam_lowe()
         return result
 
     def load_all_models(self, model: []):

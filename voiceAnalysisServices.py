@@ -21,13 +21,15 @@ bhadresh_savani_bert_base_uncased_emotion_model = "bhadresh-savani/bert-base-unc
 
 class VoiceAnalysisServices(LoadModules):
     load_Modules = LoadModules(False)
+
     def __init__(self):
-        print ('in VoiceAnalysisServices constructor')
+        print('in VoiceAnalysisServices constructor')
         if (self.load_Modules == None):
             self.load_Modules = LoadModules(False)
 
     def perform_sentiment_analysis(self, text, return_all, model):
         if 'current_model' not in st.session_state:
+            print(f'Setting the current_model as {model}')
             st.session_state['current_model'] = model
         print(f' Model parameter is {model}')
         if model == 'distilbert':
@@ -62,13 +64,13 @@ class VoiceAnalysisServices(LoadModules):
     def perform_sentiment_analysis_using_flair(self, text, return_all):
         try:
             flair_sentiment = None
-            if LoadModules.all_modules and 'flair' in LoadModules.all_modules.keys() :
-                print('found flair_sentiment in global')
+            if LoadModules.all_modules and 'flair' in LoadModules.all_modules.keys():
+                print('Found flair_sentiment in LoadModules.all_modules')
                 flair_sentiment = LoadModules.all_modules['flair']
             else:
-                print('Not found flair_sentiment global, loading...')
+                print('Not found flair_sentiment LoadModules.all_modules, loading...')
                 flair_sentiment = self.load_Modules.load_model_flair()
-                print(LoadModules.all_modules)
+                # print(LoadModules.all_modules.keys())
             # download mode
             # flair_sentiment = flair.models.TextClassifier.load('en-sentiment')
             s = flair.data.Sentence(text)
@@ -111,8 +113,6 @@ class VoiceAnalysisServices(LoadModules):
         try:
             print('Nothing to Load for textBlob')
             sentiment_label, sentiment_score = self.text_blob_sentiments(text)
-            print(f'Textpad label{sentiment_label}')
-            print(f'Textpad score{sentiment_score}')
             model = st.session_state['current_model']
             print(f'Sentiment analysis {model} results are {sentiment_label} ({sentiment_score})')
             return sentiment_label, sentiment_score
@@ -124,16 +124,15 @@ class VoiceAnalysisServices(LoadModules):
     def perform_sentiment_analysis_using_distilbert(self, text, return_all):
         current_model = st.session_state['current_model']
         try:
-            distilbert_sentiment_analysis = None
             if LoadModules.all_modules and 'distilbert' in LoadModules.all_modules.keys():
-                print('found distilbert_sentiment_analysis in global')
+                print('Found distilbert_sentiment_analysis in global')
                 distilbert_sentiment_analysis = LoadModules.all_modules['distilbert']
             else:
                 print('Not found distilbert_sentiment_analysis global, loading...')
                 distilbert_sentiment_analysis = self.load_Modules.load_model_distilbert()
             # model_name = "distilbert-base-uncased-finetuned-sst-2-english"
             # sentiment_analysis = pipeline("sentiment-analysis", model=model_name, return_all_scores=return_all)
-            results = self.load_Modules.distilbert_sentiment_analysis(text)
+            results = distilbert_sentiment_analysis(text)
             print(f'Sentiment analysis {current_model} results are {results}')
             if return_all:
                 return results[0]
@@ -149,13 +148,15 @@ class VoiceAnalysisServices(LoadModules):
             print(str(ex))
             return "error", str(ex)
 
+    # Text Classification
     def perform_text_classification_using_bhadresh_savani(self, text, return_all):
         # model_name = "bhadresh-savani/bert-base-uncased-emotion"
         # savani_classification = pipeline("text-classification", model=model_name, return_all_scores=return_all)
-        if LoadModules.all_modules and 'savani' in  LoadModules.all_modules.keys():
-            print('found savani in global')
+        if LoadModules.all_modules and 'savani' in LoadModules.all_modules.keys():
+            print('Found savani_classification in LoadModules.all_modules')
+            savani_classification = LoadModules.all_modules['savani']
         else:
-            print('Not found savani LoadModules.all_modules, loading')
+            print('Not found savani_classification LoadModules.all_modules, loading')
             savani_classification = self.load_Modules.load_model_savani()
 
         results = savani_classification(text)
@@ -174,7 +175,7 @@ class VoiceAnalysisServices(LoadModules):
         current_model = st.session_state['current_model']
         sam_lowe_classification = None
         if LoadModules.all_modules and 'sam_lowe' in LoadModules.all_modules.keys():
-            print('found sam_lowe_classification in global')
+            print('Found sam_lowe_classification in global')
             sam_lowe_classification = LoadModules.all_modules['savani']
         else:
             print('Not found sam_lowe_classification global, loading...')
@@ -189,7 +190,7 @@ class VoiceAnalysisServices(LoadModules):
             sentiment_score = results[0]['score']
             return sentiment_label, sentiment_score
 
-    def transcribe_audio_file(audio_file):
+    def transcribe_audio_file(self, audio_file):
         with sr.WavFile(audio_file) as source:
             r = sr.Recognizer()
             audio = r.record(source)
@@ -202,7 +203,7 @@ class VoiceAnalysisServices(LoadModules):
                 print("Google error; {0}".format(e))
             return transcribed_text1
 
-    def transcribe_audio_data(audio_data):
+    def transcribe_audio_data(self, audio_data):
         try:
             r = sr.Recognizer()
             transcribed_text1 = r.recognize_google(audio_data)
@@ -276,8 +277,13 @@ class VoiceAnalysisServices(LoadModules):
     # of the sentence.
     def perform_sentiment_analysis_using_vader(self, sentence):
         current_model = st.session_state['current_model']
-        # Create a SentimentIntensityAnalyzer object.
-        vader_obj = SentimentIntensityAnalyzer()
+        vader_obj = None
+        if LoadModules.all_modules and 'vader' in LoadModules.all_modules.keys():
+            print('Found vader_obj in LoadModules.all_modules')
+            vader_obj = LoadModules.all_modules['vader']
+        else:
+            print('Not found vader_obj global, loading...')
+            vader_obj = self.load_Modules.load_model_vader()
 
         # polarity_scores method of SentimentIntensityAnalyzer
         # object gives a sentiment dictionary.
