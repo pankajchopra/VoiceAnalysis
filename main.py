@@ -320,20 +320,24 @@ def main():
     elif action == 'Upload a file':
         text_csv_file = st.sidebar.file_uploader("Browse", type=["txt", "csv"])
         upload_button_csv_file = st.sidebar.button("Upload & Process", key="uploadcsv")
-        if text_csv_file and text_csv_file.type in ['csv', 'txt'] and upload_button_csv_file:
+        if text_csv_file and (text_csv_file.type == 'text/csv' or text_csv_file.type == 'text/plain') and upload_button_csv_file:
             try:
                 print('Got the file')
-                df = pd.read_csv(text_csv_file.getvalue(), delimiter='\r\n')
+                df = pd.read_csv(text_csv_file, delimiter='\r\n')
                 # df.va
                 # with open(text_csv_file.getvalue(), newline='r\n') as fileloaded:
                 #     file_reader = reader(fileloaded)
                 #     for line in file_reader:
                 #         st.write(line)
+                transcribed_test = []
                 for index, row in df.iterrows():
-                    print(row[0])
-                    st.write(row[0])
-                # print(rows[1])
-                # uploadButtonState["value"] = False
+                    transcribed_test.append(row[0])
+                    # st.write(row[0])
+                process_and_show_sentimental_analysis_results(None, True, transcribed_test, model_predict)
+                # print(f'model_predict:{model_predict}')
+                if model_predict != 'All':
+                    process_and_show_text_classification_results(None, True, transcribed_test)
+
                 # st.session_state.uploadButtonState = uploadButtonState
                 # doActualthings(status_area, audio_file, model_predict)
             except Exception as ex:
