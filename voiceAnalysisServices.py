@@ -61,7 +61,8 @@ class VoiceAnalysisServices(LoadModules):
         else:
             return self.perform_sentiment_analysis_using_distilbert(text, return_all)
 
-    def perform_sentiment_analysis_using_flair(self, text, return_all):
+    def perform_sentiment_analysis_using_flair(self, text):
+        return_all = False
         try:
             flair_sentiment = None
             if LoadModules.all_modules and 'flair' in LoadModules.all_modules.keys():
@@ -137,9 +138,10 @@ class VoiceAnalysisServices(LoadModules):
             if return_all:
                 return results[0]
             else:
-                if (results[0]):
-                    sentiment_label = results[0]['label']
-                    sentiment_score = results[0]['score']
+                if (results[0] and results[0][0]):
+                    print(results[0][0])
+                    sentiment_label = results[0][0]['label']
+                    sentiment_score = results[0][0]['score']
                     return sentiment_label, sentiment_score
                 else:
                     return 'bad_data', 'Not Enough or Bad Data'
@@ -165,6 +167,7 @@ class VoiceAnalysisServices(LoadModules):
             return results[0]
         else:
             if results[0]:
+                # print(results[0])
                 sentiment_label = results[0]['label']
                 sentiment_score = results[0]['score']
                 return sentiment_label, sentiment_score
@@ -221,7 +224,7 @@ class VoiceAnalysisServices(LoadModules):
             if output:
                 polarity = output.sentiment.polarity
                 subjectivity = output.subjectivity
-                if polarity < 0 < subjectivity:
+                if -0.01 < polarity < 0.01 and subjectivity < 0:
                     return 'NEGATIVE', polarity
                 elif polarity == 0:
                     return 'NEUTRAL', polarity

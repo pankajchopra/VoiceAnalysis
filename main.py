@@ -55,8 +55,8 @@ with st.sidebar:
     #     st.download_button("Download",data=file, file_name='Sentiments_Analysis.pptx', mime='application/msword')
     # colm1, colm2 = st.columns([1,2])
     preds = {
-        'TextBlob(PatternAnlyzer) Based Sentiment Analysis': "textblob",
-        # 'TextBlob(NaiveBayesAnlyzer) Based Sentiment Analysis': "textblob",
+        # 'TextBlob(PatternAnlyzer) Based Sentiment Analysis': "textblob",
+        'TextBlob(NaiveBayesAnlyzer) Based Sentiment Analysis': "textblob",
         # 'SamLowe/roberta-base-go_emotions': 'roberta',
         # 'distilbert-base-uncased-finetuned': 'distilbert',
         'VADER Based Sentiment Analysis': 'vader',
@@ -331,12 +331,15 @@ def main():
                 #         st.write(line)
                 transcribed_test = []
                 for index, row in df.iterrows():
-                    transcribed_test.append(row[0])
-                    # st.write(row[0])
-                process_and_show_sentimental_analysis_results(None, True, transcribed_test, model_predict)
+                    # df.loc['text'].backfill = row[index]
+                     print(row[0])
+                # print(df)
+                # df["sentiment"] = df.iterrows()apply(voiceAnalysisServices.perform_sentiment_analysis_using_textblob)
+                # print(df['sentiment'])
+                # process_and_show_sentimental_analysis_results(None, True, transcribed_test, model_predict)
                 # print(f'model_predict:{model_predict}')
-                if model_predict != 'All':
-                    process_and_show_text_classification_results(None, True, transcribed_test)
+                # if model_predict != 'All':
+                #     process_and_show_text_classification_results(None, True, transcribed_test)
 
                 # st.session_state.uploadButtonState = uploadButtonState
                 # doActualthings(status_area, audio_file, model_predict)
