@@ -1,3 +1,6 @@
+#To run in debug mode
+python -m streamlit.cli run code.py
+
 # VoiceAnalysis
 https://voiceanalysis-pkchopra.streamlit.app/
 
