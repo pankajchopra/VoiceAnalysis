@@ -114,8 +114,7 @@ class VoiceAnalysisServices(LoadModules):
         try:
             print('Nothing to Load for textBlob')
             sentiment_label, sentiment_score = self.text_blob_sentiments(text)
-            model = st.session_state['current_model']
-            print(f'Sentiment analysis {model} results are {sentiment_label} ({sentiment_score})')
+            print(f'Sentiment analysis [TextBlob] results are {sentiment_label} ({sentiment_score})')
             return sentiment_label, sentiment_score
         except Exception as ex:
             print("Error occurred during .. perform_sentiment_analysis_using_textblob")
@@ -224,9 +223,9 @@ class VoiceAnalysisServices(LoadModules):
             if output:
                 polarity = output.sentiment.polarity
                 subjectivity = output.subjectivity
-                if -0.01 < polarity < 0.01 and subjectivity < 0:
+                if -0.01 < polarity and subjectivity < 0:
                     return 'NEGATIVE', polarity
-                elif polarity == 0:
+                elif -0.01 < polarity < 0.01 :
                     return 'NEUTRAL', polarity
                 else:
                     return 'POSITIVE', polarity
@@ -234,21 +233,47 @@ class VoiceAnalysisServices(LoadModules):
             print("Error occurred during .. text_blob_sentiments")
             print(str(ex))
             return "error", str(ex)
-            # # Extract words from object
-            # word_count = output.word_counts
-            # # print(sentiments, word_count)
-            # sentiment_results = dict()
-            # i = 1
-            # for sentence in output.sentences:
-            #     print(sentence)
-            #     # print(sentence.string)
-            #     sentiment_results['sentence{}'.format(i)] = sentence.string
-            #     sentiment_results[f'sentence_assessment{i}'.format(i)] = sentence.sentiment_assessments
-            #     i = i+1
-            # # print(sentiment_results)
-            # return sentiments, word_count, sentiment_results
 
-    # st.write(f'Sentence Polarity:{sentence.sentiment["polarity"]}')
+    def text_blob_sentimentsOnly(self, text):
+        # Create a TextBlob object
+        try:
+            output = TextBlob(text)
+            if output:
+                polarity = output.sentiment.polarity
+                subjectivity = output.subjectivity
+                # print(text, polarity, subjectivity)
+                if -0.02 > polarity and subjectivity > 0:
+                    return 'NEGATIVE'
+                elif -0.2 < polarity < 0.2:
+                    return 'NEUTRAL'
+                elif polarity > 0.02:
+                    return 'POSITIVE'
+        except Exception as ex:
+            print("Error occurred during .. text_blob_sentiments")
+            print(str(ex))
+            return "error", str(ex)
+
+    def text_blob_polarityOnly(self, text):
+        # Create a TextBlob object
+        try:
+            output = TextBlob(text)
+            if output:
+                polarity = output.sentiment.polarity
+                # subjectivity = output.subjectivity
+                # print(polarity, subjectivity)
+                # if -0.02 > polarity and subjectivity > 0:
+                #     return 'NEGATIVE'
+                # elif -0.2 < polarity < 0.2:
+                #     return 'NEUTRAL'
+                # elif polarity > 0.02:
+                #     return 'POSITIVE'
+                return polarity
+        except Exception as ex:
+            print("Error occurred during .. text_blob_sentiments")
+            print(str(ex))
+            return "error", str(ex)
+
+
     def analyze_sentiment(self, text):
         sentiment_analysis = pipeline("sentiment-analysis", framework="pt", model="SamLowe/roberta-base-go_emotions")
         results = sentiment_analysis(text)

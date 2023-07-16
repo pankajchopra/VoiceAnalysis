@@ -7,7 +7,8 @@ from voiceAnalysisServices import VoiceAnalysisServices
 from myUtilityDefs import convertToNewDictionary, print_sentiments, get_sentiment_emoji
 from os import path
 import audio_recorder_streamlit as ars
-
+import matplotlib.pyplot as plt
+import matplotlib.colorbar as cb
 import nltk
 nltk.download('punkt')
 # nltk.download('stopwords')
@@ -322,23 +323,52 @@ def main():
         upload_button_csv_file = st.sidebar.button("Upload & Process", key="uploadcsv")
         if text_csv_file and (text_csv_file.type == 'text/csv' or text_csv_file.type == 'text/plain') and upload_button_csv_file:
             try:
-                print('Got the file')
+                print('Reading the file')
                 df = pd.read_csv(text_csv_file, delimiter='\r\n')
-                # df.va
-                # with open(text_csv_file.getvalue(), newline='r\n') as fileloaded:
-                #     file_reader = reader(fileloaded)
-                #     for line in file_reader:
-                #         st.write(line)
-                transcribed_test = []
-                for index, row in df.iterrows():
-                    # df.loc['text'].backfill = row[index]
-                     print(row[0])
-                # print(df)
-                # df["sentiment"] = df.iterrows()apply(voiceAnalysisServices.perform_sentiment_analysis_using_textblob)
-                # print(df['sentiment'])
-                # process_and_show_sentimental_analysis_results(None, True, transcribed_test, model_predict)
-                # print(f'model_predict:{model_predict}')
-                # if model_predict != 'All':
+                df.columns = ["text" ]
+                df1 = df.apply(lambda x: x.str.strip())
+                df1["sentiment"] = df1.iloc[:,0].apply(voiceAnalysisServices.text_blob_sentimentsOnly)
+                df1["polarity"] = df1.iloc[:, 0].apply(voiceAnalysisServices.text_blob_polarityOnly)
+                if model_predict != 'All':
+                    col1, col2 = st.columns([1,2])
+
+                    # Let's count the number of texts by sentiments
+                    sentiment_counts = df1.groupby(["sentiment"]).size()
+                    # print(sentiment_counts)
+                    # Let's visualize the sentiments
+                    fig = plt.figure(figsize=(1, 1), dpi=100)
+                    ax = plt.subplot(111)
+                    sentiment_counts.plot.pie(ax=ax, autopct="%1.1f%%", startangle=270, fontsize=5, label="")
+                    col1.pyplot(fig)
+                    # ---------
+                    # Let's count the number of texts by sentiments
+                    # df1['set'] = pd.cut(df1['polarity'], bins=20, labels=range(1, 21))
+                    df1['qset'] = pd.qcut(df1['polarity'], 11, labels=None, retbins=False, precision=8, duplicates='drop')
+                    # count the number of values in each bin
+                    counts = df1['qset'].value_counts()
+                    qset_count = df1.groupby(["qset"]).size()
+                    # ax1, fig1 = plt.subplots()
+                    ax1 = plt.subplot(111)
+                    fig1 = plt.figure(figsize=(1, 1), dpi=100)
+
+                    # plot the horizontal bar chart
+                    counts.plot(kind='bar', color='red')
+                    # print(f"qset:{df1['qset']}")
+                    # plt.show()
+
+                    # plt.bar(range(-1,1),df1.groupby(["qset"]))
+                    col2.pyplot(fig1)
+                    # plt.xlim(-1,1)
+                    # plt.bar(data=polarity_counts)
+                    # fig1, ax1 = plt.subplots()
+                    # # Let's visualize the polarity
+                    # # fig =plt.figure(figsize=(1, 1), dpi=100)
+                    # # plt.xlim(-1,1)
+                    # col2.pyplot(fig1)
+                    # ax = plt.subplot(111)
+
+
+                    # plt.show()
                 #     process_and_show_text_classification_results(None, True, transcribed_test)
 
                 # st.session_state.uploadButtonState = uploadButtonState
