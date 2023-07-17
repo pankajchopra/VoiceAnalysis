@@ -59,10 +59,9 @@ class VoiceAnalysisServices(LoadModules):
             print(f' Using Model {model}')
             return self.perform_sentiment_analysis_all(text)
         else:
-            return self.perform_sentiment_analysis_using_distilbert(text, return_all)
+            return self.perform_sentiment_analysis_using_flair(text, return_all)
 
-    def perform_sentiment_analysis_using_flair(self, text):
-        return_all = False
+    def perform_sentiment_analysis_using_flair(self, text, return_all):
         try:
             flair_sentiment = None
             if LoadModules.all_modules and 'flair' in LoadModules.all_modules.keys():
@@ -80,7 +79,7 @@ class VoiceAnalysisServices(LoadModules):
             # print(s.get_label().value)
             total_sentiment = s.labels
             model = st.session_state['current_model']
-            print(f'Sentiment analysis {model} results are {total_sentiment}')
+            # print(f'Sentiment analysis {model} results are {total_sentiment}')
             if return_all:
                 return s
             else:
