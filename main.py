@@ -72,10 +72,11 @@ with st.sidebar:
         with st.sidebar:
             sentiment_models = {
                 'TextBlob(PatternAnlyzer) Based Sentiment Analysis': "textblob",
-                'TextBlob(NaiveBayesAnlyzer) Based Sentiment Analysis': "textblob",
+                # 'TextBlob(NaiveBayesAnlyzer) Based Sentiment Analysis': "textblob",
                 'VADER Based Sentiment Analysis': 'vader',
                 'FLAIR Based Sentiment Analysis': 'flair',
-                # "Use All and Compare": 'All'
+                'Custom model(BERT - distilbert-base-uncased-finetuned': 'distilbert',
+                "Use All and Compare": 'All'
             }
             model_select = st.selectbox(
                 "Select the model to predict : ", list(sentiment_models.keys()))
@@ -129,12 +130,12 @@ with st.sidebar:
         elif action=='Live Audio':
             st.markdown('*Audio Recorder*')
             recorded_audio_in_bytes = ars.audio_recorder(text="Click to Record ( 2 sec pause starts analysis)", pause_threshold=2.0, sample_rate=41_000)
-        elif action=='Plain Text':
-            st.markdown('*Plain Text*')
-            text = st.text_area('Type or paste few sentences to Analyse(>10 char)', key=9, height=100)
-            analyse = st.button('Analyse')
-        elif action=='Upload a Text file':
-            st.markdown('*Upload a Text File*')
+        # elif action=='Plain Text':
+        #     st.markdown('*Plain Text*')
+        #     text = st.text_area('Type or paste few sentences to Analyse(>10 char)', key=9, height=100)
+        #     analyse = st.button('Analyse')
+        # elif action=='Upload a Text file':
+        #     st.markdown('*Upload a Text File*')
 
 
 
@@ -355,6 +356,10 @@ def main():
                 uploadButtonState["value"] = True
                 st.session_state.uploadButtonState = uploadButtonState
         elif action == 'Plain Text':
+            with st.sidebar:
+                st.markdown('*Plain Text*')
+                text = st.text_area('Type or paste few sentences to Analyse(>10 char)', key=9, height=100)
+                analyse = st.button('Analyse')
             if analyse and len(text)>10:
                 print(f'model_predict is {model_predict} {model_select}')
                 # st.header("Seman Classification Results Analysis(Bert-base-uncased-emotion)")
@@ -363,6 +368,7 @@ def main():
                 if model_predict != 'All':
                     process_and_show_text_classification_results(None, True, text)
         elif action == 'Upload a file':
+            st.markdown('*Upload a Text File*')
             text_csv_file = st.sidebar.file_uploader("Browse", type=["txt", "csv"])
             upload_button_csv_file = st.sidebar.button("Upload & Process", key="uploadcsv")
             if text_csv_file and (text_csv_file.type == 'text/csv' or text_csv_file.type == 'text/plain') and upload_button_csv_file:
@@ -421,9 +427,10 @@ def plot_to_charts(df1):
     print(f'counts:{counts}')
     print(f'bins:{bins}')
     data = df1.polarity
-    counts, edges, bars = plt.hist(x=data, bins=bins, range=cutoff, color='grey', linewidth=0.1, edgecolor="white")
-    # fontdict = {'fontname': 'Comic Sans MS', 'fontsize': 14}
-    # plt.title('Sentiment Analysis', **fontdict)
+    density,bins, _ = plt.hist(x=data, bins=bins, range=cutoff, color='grey', linewidth=0.1, edgecolor="white")
+    for x, y, num in zip(bins, density, counts):
+        if num != 0:
+            plt.text(x+0.03, y, num, fontsize=5, rotation=0)  # x,y,str
     plt.xlabel('Polarity')
     plt.xticks(bins, color='black', fontsize=4)
     plt.yticks([0, 50, 200, 500, 1000, 2000], color='blue', fontsize=4)

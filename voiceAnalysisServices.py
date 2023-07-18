@@ -86,6 +86,8 @@ class VoiceAnalysisServices(LoadModules):
                 if s:
                     sentiment_label = s.get_label().value
                     sentiment_score = s.score
+                    sign = 1 if sentiment_label == 'POSITIVE' else -1
+                    sentiment_score = sentiment_score * sign
                     return sentiment_label, sentiment_score
                 else:
                     return 'bad_data', 'Not Enough or Bad Data'
