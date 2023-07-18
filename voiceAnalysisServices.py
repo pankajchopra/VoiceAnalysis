@@ -142,6 +142,8 @@ class VoiceAnalysisServices(LoadModules):
                     print(results[0][0])
                     sentiment_label = results[0][0]['label']
                     sentiment_score = results[0][0]['score']
+                    sign = 1 if sentiment_label == 'POSITIVE' else -1
+                    sentiment_score = sentiment_score * sign
                     return sentiment_label, sentiment_score
                 else:
                     return 'bad_data', 'Not Enough or Bad Data'
@@ -235,44 +237,44 @@ class VoiceAnalysisServices(LoadModules):
             print(str(ex))
             return "error", str(ex)
 
-    def text_blob_sentimentsOnly(self, text):
-        # Create a TextBlob object
-        try:
-            output = TextBlob(text)
-            if output:
-                polarity = output.sentiment.polarity
-                subjectivity = output.subjectivity
-                # print(text, polarity, subjectivity)
-                if -0.02 > polarity and subjectivity > 0:
-                    return 'NEGATIVE'
-                elif -0.2 < polarity < 0.2:
-                    return 'NEUTRAL'
-                elif polarity > 0.02:
-                    return 'POSITIVE'
-        except Exception as ex:
-            print("Error occurred during .. text_blob_sentiments")
-            print(str(ex))
-            return "error", str(ex)
-
-    def text_blob_polarityOnly(self, text):
-        # Create a TextBlob object
-        try:
-            output = TextBlob(text)
-            if output:
-                polarity = output.sentiment.polarity
-                # subjectivity = output.subjectivity
-                # print(polarity, subjectivity)
-                # if -0.02 > polarity and subjectivity > 0:
-                #     return 'NEGATIVE'
-                # elif -0.2 < polarity < 0.2:
-                #     return 'NEUTRAL'
-                # elif polarity > 0.02:
-                #     return 'POSITIVE'
-                return polarity
-        except Exception as ex:
-            print("Error occurred during .. text_blob_sentiments")
-            print(str(ex))
-            return "error", str(ex)
+    # def text_blob_sentimentsOnly(self, text):
+    #     # Create a TextBlob object
+    #     try:
+    #         output = TextBlob(text)
+    #         if output:
+    #             polarity = output.sentiment.polarity
+    #             subjectivity = output.subjectivity
+    #             # print(text, polarity, subjectivity)
+    #             if -0.02 > polarity and subjectivity > 0:
+    #                 return 'NEGATIVE'
+    #             elif -0.2 < polarity < 0.2:
+    #                 return 'NEUTRAL'
+    #             elif polarity > 0.02:
+    #                 return 'POSITIVE'
+    #     except Exception as ex:
+    #         print("Error occurred during .. text_blob_sentiments")
+    #         print(str(ex))
+    #         return "error", str(ex)
+    #
+    # def text_blob_polarityOnly(self, text):
+    #     # Create a TextBlob object
+    #     try:
+    #         output = TextBlob(text)
+    #         if output:
+    #             polarity = output.sentiment.polarity
+    #             # subjectivity = output.subjectivity
+    #             # print(polarity, subjectivity)
+    #             # if -0.02 > polarity and subjectivity > 0:
+    #             #     return 'NEGATIVE'
+    #             # elif -0.2 < polarity < 0.2:
+    #             #     return 'NEUTRAL'
+    #             # elif polarity > 0.02:
+    #             #     return 'POSITIVE'
+    #             return polarity
+    #     except Exception as ex:
+    #         print("Error occurred during .. text_blob_sentiments")
+    #         print(str(ex))
+    #         return "error", str(ex)
 
 
     def analyze_sentiment(self, text):
