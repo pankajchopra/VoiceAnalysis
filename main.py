@@ -315,14 +315,14 @@ def main():
                 polarity = list()
                 progressBar.progress(30, 'Setiment Analysis...')
                 # write_current_status(status_area, 'Finished Processing!! ')
-                tot = len(df1.index)
-                i=0
+                # tot = len(df1.index)
+                # i=0
                 for text in df1.iloc[:, 0]:
                     rsult = voiceAnalysisServices.perform_sentiment_analysis(text,return_all=False, model=model_predict)
                     sentiments.append(rsult[0])
                     polarity.append((rsult[1]))
-                    print(60- np.round((tot-i)%60))
-                    i=i+1
+                    # print(60- np.round((tot-i)%60))
+                    # i=i+1
                     # progressBar.progress(30+np.round(tot%60), 'Sentiment Analysis...')
                     # write_current_status(status_area, 'Finished Processing!! ')
 
