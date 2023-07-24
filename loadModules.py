@@ -51,7 +51,7 @@ class LoadModules:
             print(str(ex))
             return "error", str(ex)
 
-    def load_model_savani(self):
+    def load_model_bhadresh_savani(self):
         try:
             LoadModules.all_modules['savani'] = pipeline("text-classification",
                                                          model="bhadresh-savani/bert-base-uncased-emotion",

@@ -3,9 +3,8 @@ import traceback
 import pandas as pd
 from data_cache import pandas_cache
 import streamlit as st
-from streamlit_option_menu import option_menu
 from voiceAnalysisServices import VoiceAnalysisServices
-from myUtilityDefs import convertToNewDictionary, print_sentiments, get_sentiment_emoji
+from myUtilityDefs import convert_to_new_dictionary, print_sentiments, get_sentiment_emoji
 from os import path
 import audio_recorder_streamlit as ars
 import matplotlib.pyplot as plt
@@ -21,7 +20,7 @@ nltk.download('vader_lexicon')
 
 voiceAnalysisServices = VoiceAnalysisServices();
 st.set_page_config(layout="wide")
-#-----
+
 # print("Setting session state")
 actionRadioButtonState = st.session_state.get("enable_radio", {"value": True})
 uploadButtonState = st.session_state.get("enable_upload", {"value": True})
@@ -48,21 +47,25 @@ with st.sidebar:
         # 'TextBlob(NaiveBayesAnlyzer) Based Sentiment Analysis': "textblob",
         'VADER Based Sentiment Analysis': 'vader',
         'FLAIR Based Sentiment Analysis': 'flair',
-        'Custom model(BERT - distilbert-base-uncased-finetuned': 'distilbert',
+        'Custom Sentiment Model(BERT - distilbert)': 'distilbert',
+        'Custom Emotions model(BERT - Bhadresh-Savani)': 'savani'
         # "Use All and Compare": 'All'
     }
     model_select = st.selectbox(
         "Select the model to predict : ", list(sentiment_models.keys()))
     model_predict = sentiment_models.get(model_select)
 
-    action_names = ['Sample Audio', 'Upload an Audio','Live Audio', 'Plain Text', 'Upload a file']
+    action_names = ['Sample Audio', 'Upload an Audio','Live Audio', 'Plain Text', 'Upload a file(text in each line)']
     action = st.radio('Actions',
                               action_names,
                               key='action_radio',
                               disabled= not actionRadioButtonState
                               )
 
+
 def write_current_status(status_area, text):
+    if not status_area:
+        status_area = st.write("")
     with status_area:
         st.empty()
         st.markdown('**'+text+'**')
@@ -74,9 +77,9 @@ def process_and_show_sentimental_analysis_results(audio_file, transcribed, trans
         transcribed_text = voiceAnalysisServices.transcribe_audio_file(audio_file)
         # st.header("Transcribed Text")
         st.text_area("Transcribed Text", transcribed_text, key=1, height=150)
-
-    st.header("Transcribed Text")
-    st.text_area("", transcribed_text, height=150)
+    else:
+        # st.header("Text")
+        st.text_area("Text", transcribed_text, height=150)
     # st.markdown(" # Analysing...")
     return_all = False
     if model == 'All':
@@ -91,6 +94,35 @@ def process_and_show_sentimental_analysis_results(audio_file, transcribed, trans
             st.header(f"Sentiment Analysis  ")
             st.markdown("<font size='5'>  Model: {} </font>".format( model_select), unsafe_allow_html=True)
             st.markdown("*" + print_sentiments(sentiment_label, sentiment_score) + "*")
+
+
+def process_and_show_new_sentimental_analysis_results(audio_file, transcribed, transcribed_text, model):
+    if not transcribed and audio_file:
+        st.write(f'Processing {audio_file}...' )
+        transcribed_text = voiceAnalysisServices.transcribe_audio_file(audio_file)
+        # st.header("Transcribed Text")
+        st.text_area("Transcribed Text", transcribed_text, key=1, height=150)
+    else:
+        # st.header("Text")
+        st.text_area("Text", transcribed_text, height=150)
+    # st.markdown(" # Analysing...")
+    return_all = False
+    if model == 'All':
+        if not isinstance(transcribed_text, str):
+            display_all_results_for_one_senetence(model, return_all, transcribed_text)
+    else:
+        print(f'model is {model}')
+        result = voiceAnalysisServices.perform_sentiment_analysis(transcribed_text, return_all, model)
+        if len(result) == 1:
+            sentiment = result['sentiment'][0]
+            score = result['polarity'][0]
+            st.markdown("*" + print_sentiments(sentiment, score) + "*")
+            if sentiment == 'error':
+                traceback.print_exc()
+            else:
+                st.header(f"Sentiment Analysis  ")
+                st.markdown("<font size='5'>  Model: {} </font>".format( model_select), unsafe_allow_html=True)
+                st.markdown("*" + print_sentiments(sentiment, score) + "*")
 
 
 def display_all_results_for_one_senetence(model, return_all, transcribed_text):
@@ -159,21 +191,37 @@ def display_all_results_for_one_senetence(model, return_all, transcribed_text):
 def process_and_show_text_classification_results(audio_file, transcribed, transcribed_text):
     if not transcribed:
         st.write(f'Processing {audio_file}...' )
-        transcribed_text = voiceAnalysisServices.transcribe_audio_file(audio_file)
+        transcribed_text = pd.DataFrame({"text":[voiceAnalysisServices.transcribe_audio_file(audio_file)]})
+        st.text_area("Transcribed Text", transcribed_text, key=2, height=200)
+
+    st.header("Text Classification Results Analysis(Bert-base-uncased-emotion)")
+    result = voiceAnalysisServices.perform_text_classification_using_bhadresh_savani(pd.DataFrame({"text":[transcribed_text]}), return_all=False)
+    if len(result) == 1:
+        sentiment = result['sentiment'][0]
+        score = result['polarity'][0]
+        st.markdown("*"+print_sentiments(sentiment, score)+ "*")
+
+
+def process_and_plot_text_classification_results(audio_file, transcribed, transcribed_text, return_all):
+    if not transcribed:
+        st.write(f'Processing {audio_file}...' )
+        tt = voiceAnalysisServices.transcribe_audio_file(audio_file)
+        transcribed_text = pd.DataFrame({"text": [tt]})
+
         # st.header("Transcribed Text")
         st.text_area("Transcribed Text", transcribed_text, key=2, height=200)
 
     # st.markdown(" # Text Classification...")
     st.header("Text Classification Results Analysis(Bert-base-uncased-emotion)")
-    return_all=False
     if return_all:
         resultDict = voiceAnalysisServices.perform_text_classification_using_bhadresh_savani(transcribed_text, return_all)
-        rsultDictionary=convertToNewDictionary(resultDict)
-        sentimental_results = []
-        for key, value in rsultDictionary.items():
-            sentimental_results.append(f'{key}({value}) ')
-
-        st.markdown("*"+''.join(sentimental_results)+ "*")
+        rsultDictionary=convert_to_new_dictionary(resultDict)
+        plot_to_charts(resultDict)
+        # sentimental_results = []
+        # for key, value in rsultDictionary.items():
+        #     sentimental_results.append(f'{key}({value}) ')
+        #
+        # st.markdown("*"+''.join(sentimental_results)+ "*")
     else:
         sentiment_label, sentiment_score = voiceAnalysisServices.perform_text_classification_using_bhadresh_savani(transcribed_text, return_all)
         st.markdown("*"+print_sentiments(sentiment_label, sentiment_score)+ "*")
@@ -202,22 +250,22 @@ def doActualthings(status_area,audio_file, model):
         progressBar.progress(40, 'Semantic Analysis..')
         write_current_status(status_area, f'''Semantic Analysis using {model_predict} 
                                             File Name: {audio_file}...''')
-
         process_and_show_sentimental_analysis_results(None, True, transcribed_text, model)
-        if model_predict != 'All':
+
+        if model_predict != 'All'  and model_predict != 'savani':
             progressBar.progress(70, 'Textual Classification..')
             write_current_status(status_area, f'Text Classification of {audio_file}...')
             process_and_show_text_classification_results(audio_file, True, transcribed_text)
-        progressBar.progress(90, 'Textual Classification Done...')
+            progressBar.progress(90, 'Textual Classification Done...')
         # write_current_status(status_area, 'Finished Processing!! ')
         progressBar.progress(100, 'Done, Finished Processing!!')
 
 
 def main():
-    # progressBar = st.progress(0)
-    # st.session_state['progressBar'] = progressBar
+    # progress_bar = st.progress(0)
+    # st.session_state['progress_bar'] = progress_bar
     status_area = st.markdown('')
-    if action=='Sample Audio':
+    if action in 'Sample Audio':
         with st.sidebar:
             process_sample1_button = st.button("Sample 1", key=1)
             process_sample2_button = st.button("Call Center Sample", key=2)
@@ -225,7 +273,7 @@ def main():
             # col1, col2 = st.columns([1, 2])
             # col1.markdown("**Upload an audio file (format = wav only) **")
             # col2.markdown("*Do not upload music wav file it will give error(s).*")
-        audio_file1 = path.join(path.dirname(path.realpath(__file__)), "voices/OSR_us_000_0061_8k.wav")
+        audio_file1 = path.join(path.dirname(path.realpath(__file__)), "recorded.mp3")
         audio_file2 = path.join(path.dirname(path.realpath(__file__)), "voices/call_center.wav")
         audio_file3 = path.join(path.dirname(path.realpath(__file__)), "voices/OSR_us_000_0019_8k.wav")
         try:
@@ -246,7 +294,7 @@ def main():
         finally:
             actionRadioButtonState["value"] = True
             st.session_state.actionRadioButtonState = actionRadioButtonState
-    elif action == 'Upload an Audio':
+    elif action in 'Upload an Audio':
         with st.sidebar:
             audio_file = st.file_uploader("Browse", type=["wav"])
             upload_button = st.button("Upload & Process", key="upload", disabled=not uploadButtonState)
@@ -263,7 +311,7 @@ def main():
                 uploadButtonState["value"] = True
                 st.session_state.uploadButtonState = uploadButtonState
         # Perform audio tr
-    elif action == 'Live Audio':
+    elif action in 'Live Audio':
         with st.sidebar:
             st.markdown('*Audio Recorder*')
             recorded_audio_in_bytes = ars.audio_recorder(text="Click to Record", pause_threshold=3.0, sample_rate=41_000)
@@ -283,7 +331,7 @@ def main():
         finally:
             uploadButtonState["value"] = True
             st.session_state.uploadButtonState = uploadButtonState
-    elif action == 'Plain Text':
+    elif action in 'Plain Text':
         with st.sidebar:
             st.markdown('*Plain Text*')
             text = st.text_area('Type or paste few sentences to Analyse(>10 char)', key=9, height=100)
@@ -293,55 +341,49 @@ def main():
             # st.header("Seman Classification Results Analysis(Bert-base-uncased-emotion)")
             process_and_show_sentimental_analysis_results(None, True, text, model_predict)
             # print(f'model_predict:{model_predict}')
-            if model_predict != 'All':
+            if model_predict != 'All' and model_predict != 'savani':
                 process_and_show_text_classification_results(None, True, text)
-    elif action == 'Upload a file':
-        st.markdown('*Upload a Text File*')
+    elif action in 'Upload a file(text in each line)':
+        st.markdown('*Upload a Text/csv File (text in each line)*')
         text_csv_file = st.sidebar.file_uploader("Browse", type=["txt", "csv"])
         upload_button_csv_file = st.sidebar.button("Upload & Process", key="uploadcsv")
         if text_csv_file and (text_csv_file.type == 'text/csv' or text_csv_file.type == 'text/plain') and upload_button_csv_file:
             try:
-                print('Reading the file')
-                progressBar = st.progress(5, "Reading the file...")
-                time.sleep(2.0)
-                progressBar.progress(15, 'Analysing the file...')
-                df = read_theh_csv_txt_file(text_csv_file)
-                df.columns = ["text" ]
-                df1 = df.apply(lambda x: x.str.strip())
-                # df1["sentiment1"] = list()
-                # df2 = df1.iloc[:, 0].apply(voiceAnalysisServices.perform_sentiment_analysis,return_all=False, model='flair')
-                # print(df2)
-                sentiments = list()
-                polarity = list()
-                progressBar.progress(30, 'Setiment Analysis...')
-                # write_current_status(status_area, 'Finished Processing!! ')
-                # tot = len(df1.index)
-                # i=0
-                for text in df1.iloc[:, 0]:
-                    rsult = voiceAnalysisServices.perform_sentiment_analysis(text,return_all=False, model=model_predict)
-                    sentiments.append(rsult[0])
-                    polarity.append((rsult[1]))
-                    # print(60- np.round((tot-i)%60))
-                    # i=i+1
-                    # progressBar.progress(30+np.round(tot%60), 'Sentiment Analysis...')
+                with st.spinner('Processing...'):
+                    # print('Reading the file')
+                    progress_bar = st.progress(5, "Reading the file...")
+                    time.sleep(2.0)
+                    progress_bar.progress(15, 'Analysing the file...')
+                    df = read_theh_csv_txt_file(text_csv_file)
+                    df.columns = ["text" ]
+                    df1 = df.apply(lambda x: x.str.strip())
+                    sentiments = list()
+                    polarity = list()
+                    progress_bar.progress(30, 'Sentiment Analysis...')
                     # write_current_status(status_area, 'Finished Processing!! ')
-
-                df1["sentiment"] = sentiments
-                df1["polarity"] = polarity
-
-                # df1["sentiment"] = df1.iloc[:,0].apply(voiceAnalysisServices.text_blob_sentimentsOnly)
-                # df1["polarity"] = df1.iloc[:, 0].apply(voiceAnalysisServices.text_blob_polarityOnly)
-                # print(df1)
-                if model_predict != 'All':
-                    progressBar.progress(80, 'Plotting...!!')
-                    plot_to_charts(df1)
-                    progressBar.progress(100, 'Done, Finished Processing!!')
+                    # tot = len(df1.index)
+                    # i=0
+                    if model_predict != 'savani' and model_predict != 'All': #dilbert
+                        for text in df1.iloc[:, 0]:
+                            rsult = voiceAnalysisServices.perform_sentiment_analysis(text,return_all=True, model=model_predict)
+                            sentiments.append(rsult[0])
+                            polarity.append((rsult[1]))
+                        df1["sentiment"] = sentiments
+                        df1["polarity"] = polarity
+                        progress_bar.progress(80, 'Plotting...!!')
+                        plot_to_charts(df1)
+                        progress_bar.progress(100, 'Done, Finished Processing!!')
+                    elif model_predict == 'savani' and model_predict != 'All':
+                        df = voiceAnalysisServices.perform_sentiment_analysis(df1,return_all=True, model=model_predict, isFileUpload=True)
+                        progress_bar.progress(80, 'Plotting...!!')
+                        plot_to_charts(df)
+                        progress_bar.progress(100, 'Done, Finished Processing!!')
             except Exception as ex:
                 st.error("Error occurred during sentiment/textual analysis.")
                 st.error(str(ex))
                 traceback.print_exc()
             finally:
-                uploadButtonState["value"] = True
+                # uploadButtonState["value"] = True
                 st.session_state.uploadButtonState = uploadButtonState
         # Perform audio tr
 
@@ -353,37 +395,47 @@ def read_theh_csv_txt_file(text_csv_file):
 
 
 def plot_to_charts(df1):
-    col1, col2 = st.columns([1, 1])
-    # Let's count the number of texts by sentiments
-    sentiment_counts = df1.groupby(["sentiment"]).size()
-    # print(sentiment_counts)
-    # Let's visualize the sentiments
-    fig = plt.figure(figsize=(1, 1), dpi=600)
-    ax = plt.subplot(111)
-    sentiment_counts.plot.pie(ax=ax, autopct="%1.2f%%", startangle=270, fontsize=4, label="")
-    col1.pyplot(fig)
-    # ---------
-    # Let's count the number of texts by sentiments
-    cutoff = np.linspace(-1.0, 1.0, num=6).round(decimals=1)
-    labels = ['r1', 'r2', 'r3', 'r4', 'r5']
-    print(df1)
-    df1['group'] = pd.cut(df1['polarity'], bins=cutoff, labels=labels)
-    # Let's visualize the sentiments
-    fig = plt.figure(figsize=(4, 3), dpi=600)
-    counts, bins = np.histogram(df1.polarity)
-    print(f'counts:{counts}')
-    print(f'bins:{bins}')
-    data = df1.polarity
-    density,bins, _ = plt.hist(x=data, bins=bins, range=cutoff, color='grey', linewidth=0.1, edgecolor="white")
-    for x, y, num in zip(bins, density, counts):
-        if num != 0:
-            plt.text(x+0.03, y, num, fontsize=5, rotation=0)  # x,y,str
-    plt.xlabel('Polarity')
-    plt.xticks(bins, color='black', fontsize=4)
-    plt.yticks([0, 50, 200, 500, 1000, 2000], color='blue', fontsize=4)
-    col2.pyplot(fig)
-    st.markdown("<font size='3'>  Model: {} </font>".format(model_select), unsafe_allow_html=True)
+    with st.spinner('Processing...'):
+        col1, col2 = st.columns([1, 1])
+        # Let's count the number of texts by sentiments
+        sentiment_counts = df1.groupby(["sentiment"]).size()
+        # print(sentiment_counts)
+        # Let's visualize the sentiments
+        fig = plt.figure(figsize=(1, 1), dpi=600)
+        ax = plt.subplot(111)
+        sentiment_counts.plot.pie(ax=ax, autopct="%1.2f%%", startangle=270, fontsize=4, label="")
+        col1.pyplot(fig)
+        # ---------
+        # Let's count the number of texts by sentiments
+        cutoff = np.linspace(-1.0, 1.0, num=6).round(decimals=1)
+        labels = ['r1', 'r2', 'r3', 'r4', 'r5']
+        print(df1)
+        df1['group'] = pd.cut(df1['polarity'], bins=cutoff, labels=labels)
+        # Let's visualize the sentiments
+        fig = plt.figure(figsize=(4, 3), dpi=600)
+        counts, bins = np.histogram(df1.polarity)
+        print(f'counts:{counts}')
+        print(f'bins:{bins}')
+        data = df1.polarity
+        density,bins, _ = plt.hist(x=data, bins=bins, range=cutoff, color='grey', linewidth=0.1, edgecolor="white")
+        for x, y, num in zip(bins, density, counts):
+            if num != 0:
+                plt.text(x+0.03, y, num, fontsize=5, rotation=0)  # x,y,str
+        plt.xlabel('Polarity')
+        plt.xticks(bins, color='black', fontsize=4)
+        plt.yticks([0, 50, 200, 500, 1000, 2000], color='blue', fontsize=4)
+        col2.pyplot(fig)
+        st.markdown("<font size='3'>  Model: {} </font>".format(model_select), unsafe_allow_html=True)
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as ex:
+        st.error("Error occurred during sentiment/textual analysis.")
+        st.error(str(ex))
+        traceback.print_exc()
+    finally:
+        uploadButtonState["value"] = True
+        st.session_state.uploadButtonState = uploadButtonState
+

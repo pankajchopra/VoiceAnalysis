@@ -2,7 +2,8 @@ import speech_recognition as sr
 import streamlit as st
 from transformers import pipeline
 from textblob import TextBlob
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+import pandas as pd
+import gc
 import flair
 from loadModules import LoadModules
 
@@ -27,7 +28,7 @@ class VoiceAnalysisServices(LoadModules):
         if (self.load_Modules == None):
             self.load_Modules = LoadModules(False)
 
-    def perform_sentiment_analysis(self, text, return_all, model):
+    def perform_sentiment_analysis(self, text, return_all, model, isFileUpload=False):
         if 'current_model' not in st.session_state:
             print(f'Setting the current_model as {model}')
             st.session_state['current_model'] = model
@@ -43,15 +44,23 @@ class VoiceAnalysisServices(LoadModules):
         elif model == 'roberta':
             st.session_state['current_model'] = model
             print(f' Using Model {model}')
+            # set to all to get all emotions
+            return_all = True
             return self.perform_sentiment_analysis_using_sam_lowe(text, return_all)
         elif model == 'flair':
             print(f' Using Model {model}')
             st.session_state['current_model'] = model
             return self.perform_sentiment_analysis_using_flair(text, return_all)
+        elif model == 'savani':
+            print(f' Using Model {model}')
+            st.session_state['current_model'] = model
+            if type(text) != str:
+                return self.perform_text_classification_using_bhadresh_savani(text, return_all)
+            else:
+                return self.perform_text_classification_using_old_bhadresh_savani(text, False)
         elif model == 'textblob':
             print(f' Using Model {model}')
             st.session_state['current_model'] = model
-            print(f' Using Model {model}')
             return self.perform_sentiment_analysis_using_textblob(text)
         elif model == 'All':
             print(f' Using Model {model}')
@@ -152,8 +161,8 @@ class VoiceAnalysisServices(LoadModules):
             print(str(ex))
             return "error", str(ex)
 
-    # Text Classification
-    def perform_text_classification_using_bhadresh_savani(self, text, return_all):
+    # Text Classification input text has to be in the dataframe
+    def perform_text_classification_using_bhadresh_savani(self, text_in_a_dataframe, return_all):
         # model_name = "bhadresh-savani/bert-base-uncased-emotion"
         # savani_classification = pipeline("text-classification", model=model_name, return_all_scores=return_all)
         if LoadModules.all_modules and 'savani' in LoadModules.all_modules.keys():
@@ -161,7 +170,35 @@ class VoiceAnalysisServices(LoadModules):
             savani_classification = LoadModules.all_modules['savani']
         else:
             print('Not found savani_classification LoadModules.all_modules, loading')
-            savani_classification = self.load_Modules.load_model_savani()
+            savani_classification = self.load_Modules.load_model_bhadresh_savani()
+
+        text_in_a_dataframe['result'] = text_in_a_dataframe["text"].apply(savani_classification)
+        text_in_a_dataframe['result'] = text_in_a_dataframe['result'].apply(lambda x: x[0])
+        text_in_a_dataframe[['label', 'score']] = text_in_a_dataframe['result'].apply(pd.Series)
+        text_in_a_dataframe['result'].apply(pd.Series)
+        text_in_a_dataframe.drop('result', axis=1, inplace=True)
+        # text_in_a_dataframe.rename(columns={'label':'sentiment'},inplace=True)
+        # text_in_a_dataframe.rename(columns={'score': 'polarity'},inplace=True)
+
+        result = pd.DataFrame()
+        result['sentiment'] = text_in_a_dataframe['label']
+        result['polarity'] = text_in_a_dataframe['score']
+        print(f'Text Classification Analysis results are {result.sample()}')
+        # if return_all:
+        del text_in_a_dataframe
+        gc.collect()
+        return result
+
+    # Text Classification
+    def perform_text_classification_using_old_bhadresh_savani(self, text, return_all):
+        # model_name = "bhadresh-savani/bert-base-uncased-emotion"
+        # savani_classification = pipeline("text-classification", model=model_name, return_all_scores=return_all)
+        if LoadModules.all_modules and 'savani' in LoadModules.all_modules.keys():
+            print('Found savani_classification in LoadModules.all_modules')
+            savani_classification = LoadModules.all_modules['savani']
+        else:
+            print('Not found savani_classification LoadModules.all_modules, loading')
+            savani_classification = self.load_Modules.load_model_bhadresh_savani()
 
         results = savani_classification(text)
         print(f'Text Classification Analysis results are {results}')
@@ -226,9 +263,9 @@ class VoiceAnalysisServices(LoadModules):
             if output:
                 polarity = output.sentiment.polarity
                 subjectivity = output.subjectivity
-                if -0.01 < polarity and subjectivity < 0:
+                if -0.02 > polarity and subjectivity > 0:
                     return 'NEGATIVE', polarity
-                elif -0.01 < polarity < 0.01 :
+                elif -0.02 <= polarity <= 0.02:
                     return 'NEUTRAL', polarity
                 else:
                     return 'POSITIVE', polarity
@@ -275,7 +312,6 @@ class VoiceAnalysisServices(LoadModules):
     #         print("Error occurred during .. text_blob_sentiments")
     #         print(str(ex))
     #         return "error", str(ex)
-
 
     def analyze_sentiment(self, text):
         sentiment_analysis = pipeline("sentiment-analysis", framework="pt", model="SamLowe/roberta-base-go_emotions")

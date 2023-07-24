@@ -1,4 +1,4 @@
-def convertToNewDictionary(list_of_dicts):
+def convert_to_new_dictionary(list_of_dicts):
     new_dict = {}
     for dictionary in list_of_dicts:
         temp_key=None
