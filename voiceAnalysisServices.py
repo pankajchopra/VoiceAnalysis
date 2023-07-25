@@ -187,6 +187,7 @@ class VoiceAnalysisServices(LoadModules):
         # if return_all:
         del text_in_a_dataframe
         gc.collect()
+
         return result
 
     # Text Classification

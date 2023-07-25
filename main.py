@@ -18,7 +18,7 @@ nltk.download('vader_lexicon')
 # nltk.download('all-corpora')
 
 
-voiceAnalysisServices = VoiceAnalysisServices();
+voiceAnalysisServices = VoiceAnalysisServices()
 st.set_page_config(layout="wide")
 
 # print("Setting session state")
@@ -267,7 +267,7 @@ def main():
     status_area = st.markdown('')
     if action in 'Sample Audio':
         with st.sidebar:
-            process_sample1_button = st.button("Sample 1", key=1)
+            process_sample1_button = st.button("Sample 1 ( Last Live Audio)", key=1)
             process_sample2_button = st.button("Call Center Sample", key=2)
             process_sample3_button = st.button("Sample 3", key=3)
             # col1, col2 = st.columns([1, 2])
@@ -365,7 +365,7 @@ def main():
                     # i=0
                     if model_predict != 'savani' and model_predict != 'All': #dilbert
                         for text in df1.iloc[:, 0]:
-                            rsult = voiceAnalysisServices.perform_sentiment_analysis(text,return_all=True, model=model_predict)
+                            rsult = voiceAnalysisServices.perform_sentiment_analysis(text,return_all=False, model=model_predict)
                             sentiments.append(rsult[0])
                             polarity.append((rsult[1]))
                         df1["sentiment"] = sentiments
@@ -376,7 +376,7 @@ def main():
                     elif model_predict == 'savani' and model_predict != 'All':
                         df = voiceAnalysisServices.perform_sentiment_analysis(df1,return_all=True, model=model_predict, isFileUpload=True)
                         progress_bar.progress(80, 'Plotting...!!')
-                        plot_to_charts(df)
+                        plot_to_charts_savani(df)
                         progress_bar.progress(100, 'Done, Finished Processing!!')
             except Exception as ex:
                 st.error("Error occurred during sentiment/textual analysis.")
@@ -408,9 +408,9 @@ def plot_to_charts(df1):
         # ---------
         # Let's count the number of texts by sentiments
         cutoff = np.linspace(-1.0, 1.0, num=6).round(decimals=1)
-        labels = ['r1', 'r2', 'r3', 'r4', 'r5']
+        # labels = ['r1', 'r2', 'r3', 'r4', 'r5']
         print(df1)
-        df1['group'] = pd.cut(df1['polarity'], bins=cutoff, labels=labels)
+        # df1['group'] = pd.cut(df1['polarity'], bins=cutoff, labels=labels)
         # Let's visualize the sentiments
         fig = plt.figure(figsize=(4, 3), dpi=600)
         counts, bins = np.histogram(df1.polarity)
@@ -425,7 +425,38 @@ def plot_to_charts(df1):
         plt.xticks(bins, color='black', fontsize=4)
         plt.yticks([0, 50, 200, 500, 1000, 2000], color='blue', fontsize=4)
         col2.pyplot(fig)
-        st.markdown("<font size='3'>  Model: {} </font>".format(model_select), unsafe_allow_html=True)
+        st.markdown("<font size='5'>  Model: {} </font>".format(model_select), unsafe_allow_html=True)
+
+
+def plot_to_charts_savani(df1):
+    with st.spinner('Processing...'):
+        col1, col2 = st.columns([1, 1])
+        # Let's count the number of texts by sentiments
+        sentiment_counts = df1.groupby(["sentiment"]).size()
+        print(f'sentiment_counts:{sentiment_counts}')
+        # Let's visualize the sentiments
+        fig = plt.figure(figsize=(1, 1), dpi=600)
+        ax = plt.subplot(111)
+        sentiment_counts.plot.pie(ax=ax, autopct="%1.2f%%", startangle=270, fontsize=4, label="")
+        col1.pyplot(fig)
+        # ---------
+        #emotions percentage
+        sentiment_pct = df1['sentiment'].value_counts(normalize=True) * 100
+        print(f'sentiment_pct{sentiment_pct}')
+        print(f'sentiment_counts_count{sentiment_counts.count()}')
+        fig = plt.figure(figsize=(4, 3), dpi=600)
+        df2 = pd.DataFrame(sentiment_pct)
+        df2.rename(columns={'proportion': 'percentage'}, inplace=True)
+        df2['emotions'] = df2.index
+        # fig = df2.plot.hist(alpha=0.5)
+
+        plt.bar(df2['emotions'].to_list(), df2['percentage'].to_list(), alpha=0.5)
+
+        plt.xlabel('Sentiments')
+        plt.ylabel('Percentage')
+        plt.title('Sentiments Percentage')
+        col2.pyplot(fig)
+        st.markdown("<font size='5'>  Model: {} </font>".format(model_select), unsafe_allow_html=True)
 
 
 if __name__ == "__main__":
