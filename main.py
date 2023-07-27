@@ -38,6 +38,7 @@ st.markdown(' # FA/Client Sentiment Analysis!')
 # st.image('work-in-progress.png', width=100)
 with st.sidebar:
     st.title("Audio Analysis")
+    st.markdown("_last deploy: 7/27/2022_")
     st.write("""The Audio Analysis app is a powerful tool that allows you to analyze audio files 
                      and gain valuable insights from them. It combines speech recognition 
                      and sentiment analysis techniques to transcribe the audio 
@@ -47,15 +48,17 @@ with st.sidebar:
         # 'TextBlob(NaiveBayesAnlyzer) Based Sentiment Analysis': "textblob",
         'VADER Based Sentiment Analysis': 'vader',
         'FLAIR Based Sentiment Analysis': 'flair',
-        'Custom Sentiment Model(BERT - distilbert)': 'distilbert',
-        'Custom Emotions model(BERT - Bhadresh-Savani)': 'savani'
-        # "Use All and Compare": 'All'
+        'Distilbert-Sentiment Analysis': 'distilbert',
+        'SamLowe/RoBERTa-base-go_emotions': 'samLowe',
+        'Text Classification-Bhadresh-Savani': 'savani',
+        "Compare-TextBlob-Vader-Flair-Distilbert": 'All',
+        # "Compare-Savani & SamLowe": 'All-SS'
     }
     model_select = st.selectbox(
         "Select the model to predict : ", list(sentiment_models.keys()))
     model_predict = sentiment_models.get(model_select)
 
-    action_names = ['Sample Audio', 'Upload an Audio','Live Audio', 'Plain Text', 'Upload a file(text in each line)']
+    action_names = ['Sample Audio', 'Upload an Audio', 'Live Audio', 'Plain Text', 'Upload a file(text in each line)']
     action = st.radio('Actions',
                               action_names,
                               key='action_radio',
@@ -71,6 +74,52 @@ def write_current_status(status_area, text):
         st.markdown('**'+text+'**')
 
 
+def display_all_results_for_multiple_senetence(model, return_all, transcribed_text):
+    st.write('''Text Classification Analysis Emotions comparison for roBERTa and SamLowe Text Classification models
+                        [Click Here](https://aashishmehta.com/sentiment-analysis-comparison/)''')
+    result = voiceAnalysisServices.perform_sentiment_analysis(transcribed_text, return_all, model)
+    col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 1])
+    # print(result)
+    # st.write(result)
+    mystyle = '''
+                <style>
+                    p {
+                        text-align: justify;
+                    }
+                </style>
+                '''
+    st.markdown(mystyle, unsafe_allow_html=True)
+    for k in list(result.keys()):
+        sentiment_label = result.get(k)['sentiment_label']
+        sentiment_score = result.get(k)['sentiment_score']
+        if k == 'flair':
+            col1.markdown("<font size='5' align='center'> Model: {} </font>".format(k.upper()), unsafe_allow_html=True)
+            col1.markdown("<font size='4' > Score: {} </font>".format(sentiment_score), unsafe_allow_html=True)
+            col1.subheader(f"{get_sentiment_emoji(sentiment_label.lower())} {sentiment_label}")
+            col1.info("""Flair, employs pre-trained language models and transfer 
+                    learning to generate contextual string embeddings 
+                    for sentiment analysis""")
+        if k == 'vader':
+            col2.markdown("<font size='5' align='center'> Model: {} </font>".format(k.upper()), unsafe_allow_html=True)
+            col2.markdown("<font size='4' > Score: {} </font>".format(sentiment_score), unsafe_allow_html=True)
+            col2.subheader(f"{get_sentiment_emoji(sentiment_label.lower())} {sentiment_label}")
+            col2.info("""VADER (Valence Aware Dictionary 
+                               and sEntiment Reasoner) is a rule-based model that uses a 
+                               sentiment lexicon and grammatical rules to determine 
+                               the sentiment scores of the text. """)
+        if k == 'textblob':
+            col3.markdown("<font size='5' align='center'> Model: {} </font>".format(k.upper()), unsafe_allow_html=True)
+            col3.markdown("<font size='4' > Score: {} </font>".format(sentiment_score), unsafe_allow_html=True)
+            col3.subheader(f"{get_sentiment_emoji(sentiment_label.lower())} {sentiment_label}")
+            col3.info("""TextBlob(default PatternAnalyzer) is a Python NLP library that uses a natural language toolkit (NLTK).  
+                                               aTextblob it gives two outputs, which are polarity and subjectivity. 
+                                               Polarity is the output that lies between [-1,1], where -1 refers to negative 
+                                               sentiment and +1 refers to positive sentiment. Subjectivity is the output that 
+                                               lies within [0,1] and refers to personal opinions and judgments 
+                                               sentiment lexicon and grammatical rules to determine 
+                                               the sentiment scores of the text. More details here[PatternAnalysis](https://phdservices.org/pattern-analysis-in-machine-learning/) [Naive Bayes](https://www.machinelearningplus.com/predictive-modeling/how-naive-bayes-algorithm-works-with-example-and-full-code/)""")
+
+
 def process_and_show_sentimental_analysis_results(audio_file, transcribed, transcribed_text, model):
     if not transcribed and audio_file:
         st.write(f'Processing {audio_file}...' )
@@ -84,6 +133,8 @@ def process_and_show_sentimental_analysis_results(audio_file, transcribed, trans
     return_all = False
     if model == 'All':
         if not isinstance(transcribed_text, str):
+            display_all_results_for_multiple_senetence(model, return_all, transcribed_text)
+        else: #'All-SS'
             display_all_results_for_one_senetence(model, return_all, transcribed_text)
     else:
         print(f'model is {model}')
@@ -107,10 +158,10 @@ def process_and_show_new_sentimental_analysis_results(audio_file, transcribed, t
         st.text_area("Text", transcribed_text, height=150)
     # st.markdown(" # Analysing...")
     return_all = False
-    if model == 'All':
+    if 'All' in model:
         if not isinstance(transcribed_text, str):
             display_all_results_for_one_senetence(model, return_all, transcribed_text)
-    else:
+    else: # Not all but any if the other
         print(f'model is {model}')
         result = voiceAnalysisServices.perform_sentiment_analysis(transcribed_text, return_all, model)
         if len(result) == 1:
@@ -129,7 +180,7 @@ def display_all_results_for_one_senetence(model, return_all, transcribed_text):
     st.write('''Sentiment analysis comparison for three NLP tools
                     Vader vs Flair vs TextBlob [Click Here](https://aashishmehta.com/sentiment-analysis-comparison/)''')
     result = voiceAnalysisServices.perform_sentiment_analysis(transcribed_text, return_all, model)
-    col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 1])
+    col1, col2, col3, col4 = st.columns([1, 1, 1, 1])
     # print(result)
     # st.write(result)
     mystyle = '''
@@ -169,21 +220,21 @@ def display_all_results_for_one_senetence(model, return_all, transcribed_text):
                                            lies within [0,1] and refers to personal opinions and judgments 
                                            sentiment lexicon and grammatical rules to determine 
                                            the sentiment scores of the text. More details here[PatternAnalysis](https://phdservices.org/pattern-analysis-in-machine-learning/) [Naive Bayes](https://www.machinelearningplus.com/predictive-modeling/how-naive-bayes-algorithm-works-with-example-and-full-code/)""")
-        if k == 'roberta':
+        # if k == 'roberta':
+        #     col4.markdown("<font size='5' align='center'> Model: {} </font>".format(k.upper()), unsafe_allow_html=True)
+        #     col4.markdown("<font size='4' > Score: {} </font>".format(sentiment_score), unsafe_allow_html=True)
+        #     col4.subheader(f"{get_sentiment_emoji(sentiment_label.lower())} {sentiment_label}")
+        #     col4.info("""Twitter-roberta-base-sentiment is a roBERTa model trained
+        #         on ~58M tweets and fine-tuned for sentiment analysis.
+        #         Fine-tuning is the process of taking a pre-trained
+        #          large language model (e.g. roBERTa in this case)
+        #          and then tweaking it with additional training
+        #         data to make it perform a second similar task (e.g. sentiment analysis""")
+        if k == 'distilbert':
             col4.markdown("<font size='5' align='center'> Model: {} </font>".format(k.upper()), unsafe_allow_html=True)
             col4.markdown("<font size='4' > Score: {} </font>".format(sentiment_score), unsafe_allow_html=True)
             col4.subheader(f"{get_sentiment_emoji(sentiment_label.lower())} {sentiment_label}")
-            col4.info("""Twitter-roberta-base-sentiment is a roBERTa model trained 
-                on ~58M tweets and fine-tuned for sentiment analysis. 
-                Fine-tuning is the process of taking a pre-trained
-                 large language model (e.g. roBERTa in this case) 
-                 and then tweaking it with additional training 
-                data to make it perform a second similar task (e.g. sentiment analysis""")
-        if k == 'distilbert':
-            col5.markdown("<font size='5' align='center'> Model: {} </font>".format(k.upper()), unsafe_allow_html=True)
-            col5.markdown("<font size='4' > Score: {} </font>".format(sentiment_score), unsafe_allow_html=True)
-            col5.subheader(f"{get_sentiment_emoji(sentiment_label.lower())} {sentiment_label}")
-            col5.info("""DistilBERT is a smaller, faster and cheaper version of BERT. 
+            col4.info("""DistilBERT is a smaller, faster and cheaper version of BERT. 
                 It has 40% smaller than BERT 
                 and runs 60% faster while preserving over 95% of BERT’s performance""")
 
@@ -346,45 +397,57 @@ def main():
     elif action in 'Upload a file(text in each line)':
         st.markdown('*Upload a Text/csv File (text in each line)*')
         text_csv_file = st.sidebar.file_uploader("Browse", type=["txt", "csv"])
-        upload_button_csv_file = st.sidebar.button("Upload & Process", key="uploadcsv")
-        if text_csv_file and (text_csv_file.type == 'text/csv' or text_csv_file.type == 'text/plain') and upload_button_csv_file:
-            try:
-                with st.spinner('Processing...'):
-                    # print('Reading the file')
-                    progress_bar = st.progress(5, "Reading the file...")
-                    time.sleep(2.0)
-                    progress_bar.progress(15, 'Analysing the file...')
-                    df = read_theh_csv_txt_file(text_csv_file)
-                    df.columns = ["text" ]
-                    df1 = df.apply(lambda x: x.str.strip())
-                    sentiments = list()
-                    polarity = list()
-                    progress_bar.progress(30, 'Sentiment Analysis...')
-                    # write_current_status(status_area, 'Finished Processing!! ')
-                    # tot = len(df1.index)
-                    # i=0
-                    if model_predict != 'savani' and model_predict != 'All': #dilbert
-                        for text in df1.iloc[:, 0]:
-                            rsult = voiceAnalysisServices.perform_sentiment_analysis(text,return_all=False, model=model_predict)
-                            sentiments.append(rsult[0])
-                            polarity.append((rsult[1]))
-                        df1["sentiment"] = sentiments
-                        df1["polarity"] = polarity
-                        progress_bar.progress(80, 'Plotting...!!')
-                        plot_to_charts(df1)
-                        progress_bar.progress(100, 'Done, Finished Processing!!')
-                    elif model_predict == 'savani' and model_predict != 'All':
-                        df = voiceAnalysisServices.perform_sentiment_analysis(df1,return_all=True, model=model_predict, isFileUpload=True)
-                        progress_bar.progress(80, 'Plotting...!!')
-                        plot_to_charts_savani(df)
-                        progress_bar.progress(100, 'Done, Finished Processing!!')
-            except Exception as ex:
-                st.error("Error occurred during sentiment/textual analysis.")
-                st.error(str(ex))
-                traceback.print_exc()
-            finally:
-                # uploadButtonState["value"] = True
-                st.session_state.uploadButtonState = uploadButtonState
+        if model_predict != 'All':
+            upload_button_csv_file = st.sidebar.button("Upload & Process", key="uploadcsv")
+            if text_csv_file and (text_csv_file.type == 'text/csv' or text_csv_file.type == 'text/plain') and upload_button_csv_file:
+                try:
+                    with st.spinner('Processing...'):
+                        # print('Reading the file')
+                        progress_bar = st.progress(5, "Reading the file...")
+                        time.sleep(2.0)
+                        progress_bar.progress(15, 'Analysing the file...')
+                        df = read_theh_csv_txt_file(text_csv_file)
+                        df.columns = ["text" ]
+                        df1 = df.apply(lambda x: x.str.strip())
+                        sentiments = list()
+                        polarity = list()
+                        progress_bar.progress(30, 'Sentiment Analysis...')
+                        # write_current_status(status_area, 'Finished Processing!! ')
+                        # tot = len(df1.index)
+                        # i=0
+                        if model_predict != 'savani' and model_predict != 'All': #dilbert
+                            for text in df1.iloc[:, 0]:
+                                rsult = voiceAnalysisServices.perform_sentiment_analysis(text,return_all=False, model=model_predict)
+                                sentiments.append(rsult[0])
+                                polarity.append((rsult[1]))
+                            df1["sentiment"] = sentiments
+                            df1["polarity"] = polarity
+                            progress_bar.progress(80, 'Plotting...!!')
+                            plot_to_charts(df1)
+                            progress_bar.progress(100, 'Done, Finished Processing!!')
+                        elif (model_predict == 'savani' or model_predict=='roberta') and model_predict != 'All':
+                            df = voiceAnalysisServices.perform_sentiment_analysis(df1,return_all=True, model=model_predict, isFileUpload=True)
+                            progress_bar.progress(80, 'Plotting...!!')
+                            plot_to_charts_savani(df)
+                            progress_bar.progress(100, 'Done, Finished Processing!!')
+                        elif model_predict =='All-SS':
+                            print(model_predict)
+                            df = voiceAnalysisServices.perform_sentiment_analysis(df1,return_all=True, model='savani', isFileUpload=True)
+                            progress_bar.progress(50, 'Plotting...!!')
+                            plot_to_charts_savani(df)
+                            df = voiceAnalysisServices.perform_sentiment_analysis(df1,return_all=True, model='samLowe', isFileUpload=True)
+                            progress_bar.progress(50, 'Plotting...!!')
+                            plot_to_charts_savani(df)
+                            progress_bar.progress(100, 'Done, Finished Processing!!')
+                except Exception as ex:
+                    st.error("Error occurred during sentiment/textual analysis.")
+                    st.error(str(ex))
+                    traceback.print_exc()
+                finally:
+                    # uploadButtonState["value"] = True
+                    st.session_state.uploadButtonState = uploadButtonState
+        else:
+            st.sidebar.write('Compare not available for uploaded file(s) at present. Please select a different model')
         # Perform audio tr
 
 
