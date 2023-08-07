@@ -318,67 +318,45 @@ def main():
     # st.session_state['progress_bar'] = progress_bar
     if pocAction:
         st.markdown(''.join(readAMDFileAndReturnBuffer('poc_summary.md')))
-    else:
-        status_area = st.markdown('')
-        if action in 'Sample Audio':
-            with st.sidebar:
-                process_sample1_button = st.button("Sample 1 ( Last Live Audio)", key=1)
-                process_sample2_button = st.button("Call Center Sample", key=2)
-                process_sample3_button = st.button("Sample 3", key=3)
-                # col1, col2 = st.columns([1, 2])
-                # col1.markdown("**Upload an audio file (format = wav only) **")
-                # col2.markdown("*Do not upload music wav file it will give error(s).*")
-            audio_file1 = path.join(path.dirname(path.realpath(__file__)), "recorded.mp3")
-            audio_file2 = path.join(path.dirname(path.realpath(__file__)), "voices/call_center.wav")
-            audio_file3 = path.join(path.dirname(path.realpath(__file__)), "voices/OSR_us_000_0019_8k.wav")
+    status_area = st.markdown('')
+    if action in 'Sample Audio':
+        with st.sidebar:
+            process_sample1_button = st.button("Sample 1 ( Last Live Audio)", key=1)
+            process_sample2_button = st.button("Call Center Sample", key=2)
+            process_sample3_button = st.button("Sample 3", key=3)
+            # col1, col2 = st.columns([1, 2])
+            # col1.markdown("**Upload an audio file (format = wav only) **")
+            # col2.markdown("*Do not upload music wav file it will give error(s).*")
+        audio_file1 = path.join(path.dirname(path.realpath(__file__)), "recorded.mp3")
+        audio_file2 = path.join(path.dirname(path.realpath(__file__)), "voices/call_center.wav")
+        audio_file3 = path.join(path.dirname(path.realpath(__file__)), "voices/OSR_us_000_0019_8k.wav")
+        try:
+            if process_sample1_button:
+                doActualthings( status_area, audio_file1, model_predict)
+            elif process_sample2_button:
+                # actionRadioButtonState["value"] = False
+                # st.session_state.actionRadioButtonState = actionRadioButtonState
+                doActualthings(status_area,audio_file2, model_predict)
+            elif process_sample3_button:
+                # actionRadioButtonState["value"] = False
+                # st.session_state.actionRadioButtonState = actionRadioButtonState
+                doActualthings(status_area, audio_file3, model_predict)
+        except Exception as ex:
+            st.error("Error occurred during audio transcription and sentiment analysis.")
+            st.error(str(ex))
+            traceback.print_exc()
+        finally:
+            actionRadioButtonState["value"] = True
+            st.session_state.actionRadioButtonState = actionRadioButtonState
+    elif action in 'Upload an Audio':
+        with st.sidebar:
+            audio_file = st.file_uploader("Browse", type=["wav"])
+            upload_button = st.button("Upload & Process", key="upload", disabled=not uploadButtonState)
+        if audio_file and upload_button:
             try:
-                if process_sample1_button:
-                    doActualthings( status_area, audio_file1, model_predict)
-                elif process_sample2_button:
-                    # actionRadioButtonState["value"] = False
-                    # st.session_state.actionRadioButtonState = actionRadioButtonState
-                    doActualthings(status_area,audio_file2, model_predict)
-                elif process_sample3_button:
-                    # actionRadioButtonState["value"] = False
-                    # st.session_state.actionRadioButtonState = actionRadioButtonState
-                    doActualthings(status_area, audio_file3, model_predict)
-            except Exception as ex:
-                st.error("Error occurred during audio transcription and sentiment analysis.")
-                st.error(str(ex))
-                traceback.print_exc()
-            finally:
-                actionRadioButtonState["value"] = True
-                st.session_state.actionRadioButtonState = actionRadioButtonState
-        elif action in 'Upload an Audio':
-            with st.sidebar:
-                audio_file = st.file_uploader("Browse", type=["wav"])
-                upload_button = st.button("Upload & Process", key="upload", disabled=not uploadButtonState)
-            if audio_file and upload_button:
-                try:
-                    # uploadButtonState["value"] = False
-                    # st.session_state.uploadButtonState = uploadButtonState
-                    doActualthings(status_area, audio_file, model_predict)
-                except Exception as ex:
-                    st.error("Error occurred during audio transcription and sentiment analysis.")
-                    st.error(str(ex))
-                    traceback.print_exc()
-                finally:
-                    uploadButtonState["value"] = True
-                    st.session_state.uploadButtonState = uploadButtonState
-            # Perform audio tr
-        elif action in 'Live Audio':
-            with st.sidebar:
-                st.markdown('*Audio Recorder*')
-                recorded_audio_in_bytes = ars.audio_recorder(text="Click to Record", pause_threshold=3.0, sample_rate=41_000)
-            try:
-                if recorded_audio_in_bytes is not None:
-                    if len(recorded_audio_in_bytes) > 0:
-                        # convert to a wav file
-                        wav_file = open("recorded.mp3", "wb")
-                        wav_file.truncate()
-                        wav_file.write(recorded_audio_in_bytes)
-                        wav_file.close()
-                        doActualthings(status_area, "recorded.mp3", model_predict)
+                # uploadButtonState["value"] = False
+                # st.session_state.uploadButtonState = uploadButtonState
+                doActualthings(status_area, audio_file, model_predict)
             except Exception as ex:
                 st.error("Error occurred during audio transcription and sentiment analysis.")
                 st.error(str(ex))
@@ -386,73 +364,94 @@ def main():
             finally:
                 uploadButtonState["value"] = True
                 st.session_state.uploadButtonState = uploadButtonState
-        elif action in 'Plain Text':
-            with st.sidebar:
-                st.markdown('*Plain Text*')
-                text = st.text_area('Type or paste few sentences to Analyse(>10 char)', key=9, height=100)
-                analyse = st.button('Analyse')
-            if analyse and len(text)>10:
-                print(f'model_predict is {model_predict} {model_select}')
-                # st.header("Seman Classification Results Analysis(Bert-base-uncased-emotion)")
-                process_and_show_sentimental_analysis_results(None, True, text, model_predict)
-                # print(f'model_predict:{model_predict}')
-                if model_predict != 'All' and model_predict != 'savani':
-                    process_and_show_text_classification_results(None, True, text)
-        elif action in 'Upload a file(text in each line)':
-            st.markdown('*Upload a Text/csv File (text in each line)*')
-            text_csv_file = st.sidebar.file_uploader("Browse", type=["txt", "csv"])
-            if model_predict != 'All':
-                upload_button_csv_file = st.sidebar.button("Upload & Process", key="uploadcsv")
-                if text_csv_file and (text_csv_file.type == 'text/csv' or text_csv_file.type == 'text/plain') and upload_button_csv_file:
-                    try:
-                        with st.spinner('Processing...'):
-                            # print('Reading the file')
-                            progress_bar = st.progress(5, "Reading the file...")
-                            time.sleep(2.0)
-                            progress_bar.progress(15, 'Analysing the file...')
-                            df = read_theh_csv_txt_file(text_csv_file)
-                            df.columns = ["text" ]
-                            df1 = df.apply(lambda x: x.str.strip())
-                            sentiments = list()
-                            polarity = list()
-                            progress_bar.progress(30, 'Sentiment Analysis...')
-                            # write_current_status(status_area, 'Finished Processing!! ')
-                            # tot = len(df1.index)
-                            # i=0
-                            if model_predict != 'savani' and model_predict != 'All': #dilbert
-                                for text in df1.iloc[:, 0]:
-                                    rsult = voiceAnalysisServices.perform_sentiment_analysis(text,return_all=False, model=model_predict)
-                                    sentiments.append(rsult[0])
-                                    polarity.append((rsult[1]))
-                                df1["sentiment"] = sentiments
-                                df1["polarity"] = polarity
-                                progress_bar.progress(80, 'Plotting...!!')
-                                plot_to_charts(df1)
-                                progress_bar.progress(100, 'Done, Finished Processing!!')
-                            elif (model_predict == 'savani' or model_predict=='roberta') and model_predict != 'All':
-                                df = voiceAnalysisServices.perform_sentiment_analysis(df1,return_all=True, model=model_predict, isFileUpload=True)
-                                progress_bar.progress(80, 'Plotting...!!')
-                                plot_to_charts_savani(df)
-                                progress_bar.progress(100, 'Done, Finished Processing!!')
-                            elif model_predict =='All-SS':
-                                print(model_predict)
-                                df = voiceAnalysisServices.perform_sentiment_analysis(df1,return_all=True, model='savani', isFileUpload=True)
-                                progress_bar.progress(50, 'Plotting...!!')
-                                plot_to_charts_savani(df)
-                                df = voiceAnalysisServices.perform_sentiment_analysis(df1,return_all=True, model='samLowe', isFileUpload=True)
-                                progress_bar.progress(50, 'Plotting...!!')
-                                plot_to_charts_savani(df)
-                                progress_bar.progress(100, 'Done, Finished Processing!!')
-                    except Exception as ex:
-                        st.error("Error occurred during sentiment/textual analysis.")
-                        st.error(str(ex))
-                        traceback.print_exc()
-                    finally:
-                        # uploadButtonState["value"] = True
-                        st.session_state.uploadButtonState = uploadButtonState
-            else:
-                st.sidebar.write('Compare not available for uploaded file(s) at present. Please select a different model')
-            # Perform audio tr
+        # Perform audio tr
+    elif action in 'Live Audio':
+        with st.sidebar:
+            st.markdown('*Audio Recorder*')
+            recorded_audio_in_bytes = ars.audio_recorder(text="Click to Record", pause_threshold=3.0, sample_rate=41_000)
+        try:
+            if recorded_audio_in_bytes is not None:
+                if len(recorded_audio_in_bytes) > 0:
+                    # convert to a wav file
+                    wav_file = open("recorded.mp3", "wb")
+                    wav_file.truncate()
+                    wav_file.write(recorded_audio_in_bytes)
+                    wav_file.close()
+                    doActualthings(status_area, "recorded.mp3", model_predict)
+        except Exception as ex:
+            st.error("Error occurred during audio transcription and sentiment analysis.")
+            st.error(str(ex))
+            traceback.print_exc()
+        finally:
+            uploadButtonState["value"] = True
+            st.session_state.uploadButtonState = uploadButtonState
+    elif action in 'Plain Text':
+        with st.sidebar:
+            st.markdown('*Plain Text*')
+            text = st.text_area('Type or paste few sentences to Analyse(>10 char)', key=9, height=100)
+            analyse = st.button('Analyse')
+        if analyse and len(text)>10:
+            print(f'model_predict is {model_predict} {model_select}')
+            # st.header("Seman Classification Results Analysis(Bert-base-uncased-emotion)")
+            process_and_show_sentimental_analysis_results(None, True, text, model_predict)
+            # print(f'model_predict:{model_predict}')
+            if model_predict != 'All' and model_predict != 'savani':
+                process_and_show_text_classification_results(None, True, text)
+    elif action in 'Upload a file(text in each line)':
+        st.markdown('*Upload a Text/csv File (text in each line)*')
+        text_csv_file = st.sidebar.file_uploader("Browse", type=["txt", "csv"])
+        if model_predict != 'All':
+            upload_button_csv_file = st.sidebar.button("Upload & Process", key="uploadcsv")
+            if text_csv_file and (text_csv_file.type == 'text/csv' or text_csv_file.type == 'text/plain') and upload_button_csv_file:
+                try:
+                    with st.spinner('Processing...'):
+                        # print('Reading the file')
+                        progress_bar = st.progress(5, "Reading the file...")
+                        time.sleep(2.0)
+                        progress_bar.progress(15, 'Analysing the file...')
+                        df = read_theh_csv_txt_file(text_csv_file)
+                        df.columns = ["text" ]
+                        df1 = df.apply(lambda x: x.str.strip())
+                        sentiments = list()
+                        polarity = list()
+                        progress_bar.progress(30, 'Sentiment Analysis...')
+                        # write_current_status(status_area, 'Finished Processing!! ')
+                        # tot = len(df1.index)
+                        # i=0
+                        if model_predict != 'savani' and model_predict != 'All': #dilbert
+                            for text in df1.iloc[:, 0]:
+                                rsult = voiceAnalysisServices.perform_sentiment_analysis(text,return_all=False, model=model_predict)
+                                sentiments.append(rsult[0])
+                                polarity.append((rsult[1]))
+                            df1["sentiment"] = sentiments
+                            df1["polarity"] = polarity
+                            progress_bar.progress(80, 'Plotting...!!')
+                            plot_to_charts(df1)
+                            progress_bar.progress(100, 'Done, Finished Processing!!')
+                        elif (model_predict == 'savani' or model_predict=='roberta') and model_predict != 'All':
+                            df = voiceAnalysisServices.perform_sentiment_analysis(df1,return_all=True, model=model_predict, isFileUpload=True)
+                            progress_bar.progress(80, 'Plotting...!!')
+                            plot_to_charts_savani(df)
+                            progress_bar.progress(100, 'Done, Finished Processing!!')
+                        elif model_predict =='All-SS':
+                            print(model_predict)
+                            df = voiceAnalysisServices.perform_sentiment_analysis(df1,return_all=True, model='savani', isFileUpload=True)
+                            progress_bar.progress(50, 'Plotting...!!')
+                            plot_to_charts_savani(df)
+                            df = voiceAnalysisServices.perform_sentiment_analysis(df1,return_all=True, model='samLowe', isFileUpload=True)
+                            progress_bar.progress(50, 'Plotting...!!')
+                            plot_to_charts_savani(df)
+                            progress_bar.progress(100, 'Done, Finished Processing!!')
+                except Exception as ex:
+                    st.error("Error occurred during sentiment/textual analysis.")
+                    st.error(str(ex))
+                    traceback.print_exc()
+                finally:
+                    # uploadButtonState["value"] = True
+                    st.session_state.uploadButtonState = uploadButtonState
+        else:
+            st.sidebar.write('Compare not available for uploaded file(s) at present. Please select a different model')
+        # Perform audio tr
 
 
 @pandas_cache
