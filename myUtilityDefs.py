@@ -55,3 +55,20 @@ def get_sentiment_emoji(sentiment):
         "bad_data":"#@#%"
     }
     return emoji_mapping.get(sentiment, "")
+
+
+def readAMDFileAndReturnBuffer(filename):
+    import glob
+    import os
+    with open(filename, 'r') as f:
+        readme_line = f.readlines()
+        file_buffer = []
+        # resource_files = [os.path.basename(x) for x in glob.glob(f'Resources/*')]
+    for line in readme_line:
+        file_buffer.append(line)
+        # for image in resource_files:
+        #     if image in line:
+        #         st.markdown(''.join(readme_buffer[:-1]))
+        #         st.image(f'Resources/{image}')
+        #         readme_buffer.clear()
+    return file_buffer
