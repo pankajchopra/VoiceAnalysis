@@ -6,6 +6,9 @@ https://voiceanalysis-pkchopra.streamlit.app/
 
 https://docs.google.com/presentation/d/e/2PACX-1vTzSLasf4BF4oeAOi66N0fXYzICBlJA3_PyLZAOjqNhJ8GuTm5V2l5EJlknS7Xn2Z7PNkTYa1zNpPMz/pub?start=false&loop=false&delayms=3000
 
+[POC Summary](poc_summary.md)
+
+
 **Natural language programming NLP uses semantic reasoning to try to interpret what a sentence means.**
 
 _Text polarity describes whether it is a positive, neutral, or negative statement._ 
