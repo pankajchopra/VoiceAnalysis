@@ -1,6 +1,6 @@
 import time
 import streamlit as st
-from voiceAnalysisServices import VoiceAnalysisServices\
+from voiceAnalysisServices import VoiceAnalysisServices
 
 def main():
     voiceAnalysisServices = VoiceAnalysisServices()

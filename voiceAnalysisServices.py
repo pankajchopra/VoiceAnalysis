@@ -1,4 +1,3 @@
-import speech_recognition as sr
 import streamlit as st
 from transformers import pipeline
 from textblob import TextBlob
@@ -6,6 +5,8 @@ import pandas as pd
 import gc
 import flair
 from loadModules import LoadModules
+from speechtotext import SpeechToText as stt
+import traceback
 
 # import gradio as gr
 # import whisper
@@ -233,28 +234,19 @@ class VoiceAnalysisServices(LoadModules):
             sentiment_score = results[0]['score']
             return sentiment_label, sentiment_score
 
-    def transcribe_audio_file(self, audio_file):
-        with sr.WavFile(audio_file) as source:
-            r = sr.Recognizer()
-            audio = r.record(source)
+    def transcribe_audio_file(self):
             try:
-                transcribed_text1 = r.recognize_google(audio)
-                print(r.recognize_google(audio, language='en-US'))
-            except sr.UnknownValueError:
-                print("Google could not understand audio")
-            except sr.RequestError as e:
-                print("Google error; {0}".format(e))
+                transcribed_text1 = stt.speechToTextRun()
+                print(transcribed_text1)
+            except:
+                traceback.print_exc()
             return transcribed_text1
 
     def transcribe_audio_data(self, audio_data):
         try:
-            r = sr.Recognizer()
-            transcribed_text1 = r.recognize_google(audio_data)
-            print(r.recognize_google(audio_data, language='en-US'))
-        except sr.UnknownValueError:
-            print("Google could not understand audio")
-        except sr.RequestError as e:
-            print("Google error; {0}".format(e))
+            transcribed_text1 = stt.audio_to_text_run(audio_data)
+        except:
+            traceback.print_exc()
         return transcribed_text1
 
     def text_blob_sentiments(self, text):
