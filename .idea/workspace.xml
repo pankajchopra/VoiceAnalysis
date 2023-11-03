@@ -4,15 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ec3b2fa7-e5a1-463b-9ff4-d7ce5e5db743" name="Changes" comment="Added Bhardesh/Savani Emotions model">
-      <change afterPath="$PROJECT_DIR$/speechtotext.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="ec3b2fa7-e5a1-463b-9ff4-d7ce5e5db743" name="Changes" comment="Added off line vosk Speech Recognition">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Sentiments Analysis.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Sentiments_Analysis.pptx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/second.py" beforeDir="false" afterPath="$PROJECT_DIR$/second.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/voiceAnalysisServices.py" beforeDir="false" afterPath="$PROJECT_DIR$/voiceAnalysisServices.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,7 +37,7 @@
     </favorite-branches>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="develop_pankaj-2" />
+        <entry key="$PROJECT_DIR$" value="smallVoskSemanticAnalysis" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -77,6 +72,7 @@
   "keyToString": {
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "WebServerToolWindowFactoryState": "false",
     "last_opened_file_path": "C:/Users/panka/PycharmProjects/VoiceAnalysis/venv",
     "node.js.detected.package.eslint": "true",
@@ -276,15 +272,7 @@
       <workItem from="1690473072989" duration="1943000" />
       <workItem from="1690828002868" duration="6523000" />
       <workItem from="1691375040509" duration="2014000" />
-      <workItem from="1698889716500" duration="1529000" />
-    </task>
-    <task id="LOCAL-00009" summary="added requirements.txt and streamlit config">
-      <option name="closed" value="true" />
-      <created>1688697737253</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1688697737253</updated>
+      <workItem from="1698889716500" duration="4965000" />
     </task>
     <task id="LOCAL-00010" summary="added requirements.txt and streamlit config">
       <option name="closed" value="true" />
@@ -670,7 +658,15 @@
       <option name="project" value="LOCAL" />
       <updated>1690292689758</updated>
     </task>
-    <option name="localTasksCounter" value="58" />
+    <task id="LOCAL-00058" summary="Added off line vosk Speech Recognition">
+      <option name="closed" value="true" />
+      <created>1698891497895</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1698891497895</updated>
+    </task>
+    <option name="localTasksCounter" value="59" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -714,7 +710,8 @@
     <MESSAGE value="Updated Flair and added more models" />
     <MESSAGE value="AddedEmotions" />
     <MESSAGE value="Added Bhardesh/Savani Emotions model" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added Bhardesh/Savani Emotions model" />
+    <MESSAGE value="Added off line vosk Speech Recognition" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added off line vosk Speech Recognition" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -731,7 +728,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/second.py</url>
-          <line>16</line>
+          <line>15</line>
           <option name="timeStamp" value="42" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -748,11 +745,6 @@
           <url>file://$PROJECT_DIR$/main.py</url>
           <line>277</line>
           <option name="timeStamp" value="59" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/main.py</url>
-          <line>463</line>
-          <option name="timeStamp" value="63" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/voiceAnalysisServices.py</url>
@@ -780,41 +772,6 @@
           <option name="timeStamp" value="78" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/main.py</url>
-          <line>518</line>
-          <option name="timeStamp" value="79" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/main.py</url>
-          <line>523</line>
-          <option name="timeStamp" value="81" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/main.py</url>
-          <line>509</line>
-          <option name="timeStamp" value="82" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/main.py</url>
-          <line>522</line>
-          <option name="timeStamp" value="83" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/main.py</url>
-          <line>516</line>
-          <option name="timeStamp" value="84" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/main.py</url>
-          <line>515</line>
-          <option name="timeStamp" value="85" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/main.py</url>
-          <line>425</line>
-          <option name="timeStamp" value="89" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/voiceAnalysisServices.py</url>
           <line>74</line>
           <option name="timeStamp" value="91" />
@@ -833,11 +790,6 @@
           <url>file://$PROJECT_DIR$/main.py</url>
           <line>161</line>
           <option name="timeStamp" value="94" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/main.py</url>
-          <line>365</line>
-          <option name="timeStamp" value="95" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
