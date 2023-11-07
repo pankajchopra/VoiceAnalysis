@@ -51,6 +51,7 @@ with st.sidebar:
         'Distilbert-Sentiment Analysis': 'distilbert',
         'SamLowe/RoBERTa-base-go_emotions': 'samLowe',
         'Text Classification-Bhadresh-Savani': 'savani',
+        'Question-Answering':'deepset',
         "Compare-TextBlob-Vader-Flair-Distilbert": 'All',
         # "Compare-Savani & SamLowe": 'All-SS'
     }
@@ -394,6 +395,8 @@ def main():
             # print(f'model_predict:{model_predict}')
             if model_predict != 'All' and model_predict != 'savani':
                 process_and_show_text_classification_results(None, True, text)
+    elif action in 'deepset':
+
     elif action in 'Upload a file(text in each line)':
         st.markdown('*Upload a Text/csv File (text in each line)*')
         text_csv_file = st.sidebar.file_uploader("Browse", type=["txt", "csv"])
@@ -406,7 +409,7 @@ def main():
                         progress_bar = st.progress(5, "Reading the file...")
                         time.sleep(2.0)
                         progress_bar.progress(15, 'Analysing the file...')
-                        df = read_theh_csv_txt_file(text_csv_file)
+                        df = read_the_csv_txt_file(text_csv_file)
                         df.columns = ["text" ]
                         df1 = df.apply(lambda x: x.str.strip())
                         sentiments = list()
@@ -452,7 +455,7 @@ def main():
 
 
 @pandas_cache
-def read_theh_csv_txt_file(text_csv_file):
+def read_the_csv_txt_file(text_csv_file):
     df = pd.read_csv(text_csv_file, delimiter='\r\n')
     return df
 

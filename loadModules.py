@@ -51,6 +51,19 @@ class LoadModules:
             print(str(ex))
             return "error", str(ex)
 
+
+    def load_deepset_roberta_base_squad2(self, return_all_score):
+        try:
+            LoadModules.all_modules['deepset'] = pipeline("question-answering",
+                                                           model="deepset/roberta-base-squad2",
+                                                           return_all_scores=return_all_score)
+            return LoadModules.all_modules['deepset']
+        except Exception as ex:
+            print("Error occurred during .. load_deepset_roberta_base_squad2")
+            print(str(ex))
+            return "error", str(ex)
+
+
     def load_model_bhadresh_savani(self):
         try:
             LoadModules.all_modules['savani'] = pipeline("text-classification",
@@ -83,3 +96,6 @@ class LoadModules:
             return self.load_model_vader()
         if 'samLowe' in model:
             return self.load_model_sam_lowe()
+        if 'deepset' in model:
+            return self.load_deepset_roberta_base_squad2()
+
