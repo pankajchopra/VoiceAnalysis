@@ -14,16 +14,16 @@ if not os.path.exists(model_directory):
 
 # Create a path to the file you want to reach
 # current_directory = os.getcwd()
-# folder_path = "\\Users\\panka\\projects\\VoiceAnalysis\\roberta-base-go_emotions"
-folder_path = "\\Users\\panka\\projects\\VoiceAnalysis\\bhadresh-savani-bert-base-uncased-emotion"
+folder_path = "\\Users\\panka\\projects\\VoiceAnalysis\\roberta-base-go_emotions"
+# folder_path = "\\Users\\panka\\projects\\VoiceAnalysis\\bhadresh-savani-bert-base-uncased-emotion"
 print(folder_path)
 
-# model = AutoModelForSequenceClassification.from_pretrained("SamLowe/roberta-base-go_emotions", cache_dir=folder_path)
-model = AutoModelForSequenceClassification.from_pretrained("bhadresh-savani/bert-base-uncased-emotion", cache_dir=folder_path)
+model = AutoModelForSequenceClassification.from_pretrained("SamLowe/roberta-base-go_emotions", cache_dir=folder_path)
+# model = AutoModelForSequenceClassification.from_pretrained("bhadresh-savani/bert-base-uncased-emotion", cache_dir=folder_path)
 
-# model.save_pretrained(folder_path)
-# tokenizer = AutoTokenizer.from_pretrained("SamLowe/roberta-base-go_emotions")
-tokenizer = AutoTokenizer.from_pretrained("bhadresh-savani/bert-base-uncased-emotion")
+model.save_pretrained(folder_path)
+tokenizer = AutoTokenizer.from_pretrained("SamLowe/roberta-base-go_emotions")
+# tokenizer = AutoTokenizer.from_pretrained("bhadresh-savani/bert-base-uncased-emotion")
 
 tokenizer.save_pretrained(folder_path)
 # model = AutoModelForSequenceClassification.from_pretrained(folder_path)
