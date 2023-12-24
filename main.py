@@ -4,7 +4,7 @@ import pandas as pd
 from data_cache import pandas_cache
 import streamlit as st
 from voiceAnalysisServices import VoiceAnalysisServices
-from myUtilityDefs import convert_to_new_dictionary, print_sentiments, get_sentiment_emoji
+from myUtilityDefs import MyUtility as myu
 from os import path
 import audio_recorder_streamlit as ars
 import matplotlib.pyplot as plt
@@ -96,14 +96,14 @@ def display_all_results_for_multiple_senetence(model, return_all, transcribed_te
         if k == 'flair':
             col1.markdown("<font size='5' align='center'> Model: {} </font>".format(k.upper()), unsafe_allow_html=True)
             col1.markdown("<font size='4' > Score: {} </font>".format(sentiment_score), unsafe_allow_html=True)
-            col1.subheader(f"{get_sentiment_emoji(sentiment_label.lower())} {sentiment_label}")
+            col1.subheader(f"{myu.get_sentiment_emoji(sentiment_label.lower())} {sentiment_label}")
             col1.info("""Flair, employs pre-trained language models and transfer 
                     learning to generate contextual string embeddings 
                     for sentiment analysis""")
         if k == 'vader':
             col2.markdown("<font size='5' align='center'> Model: {} </font>".format(k.upper()), unsafe_allow_html=True)
             col2.markdown("<font size='4' > Score: {} </font>".format(sentiment_score), unsafe_allow_html=True)
-            col2.subheader(f"{get_sentiment_emoji(sentiment_label.lower())} {sentiment_label}")
+            col2.subheader(f"{myu.myu.get_sentiment_emoji(sentiment_label.lower())} {sentiment_label}")
             col2.info("""VADER (Valence Aware Dictionary 
                                and sEntiment Reasoner) is a rule-based model that uses a 
                                sentiment lexicon and grammatical rules to determine 
@@ -111,7 +111,7 @@ def display_all_results_for_multiple_senetence(model, return_all, transcribed_te
         if k == 'textblob':
             col3.markdown("<font size='5' align='center'> Model: {} </font>".format(k.upper()), unsafe_allow_html=True)
             col3.markdown("<font size='4' > Score: {} </font>".format(sentiment_score), unsafe_allow_html=True)
-            col3.subheader(f"{get_sentiment_emoji(sentiment_label.lower())} {sentiment_label}")
+            col3.subheader(f"{myu.get_sentiment_emoji(sentiment_label.lower())} {sentiment_label}")
             col3.info("""TextBlob(default PatternAnalyzer) is a Python NLP library that uses a natural language toolkit (NLTK).  
                                                aTextblob it gives two outputs, which are polarity and subjectivity. 
                                                Polarity is the output that lies between [-1,1], where -1 refers to negative 
@@ -125,6 +125,8 @@ def process_and_show_sentimental_analysis_results(audio_file, transcribed, trans
     if not transcribed and audio_file:
         st.write(f'Processing {audio_file}...' )
         transcribed_text = voiceAnalysisServices.transcribe_audio_file(audio_file)
+        # this uses google cloud (paid)
+        # transcribed_text = voiceAnalysisServices.transcribe_audio_with_punctuation(audio_file)
         # st.header("Transcribed Text")
         st.text_area("Transcribed Text", transcribed_text, key=1, height=150)
     else:
@@ -145,7 +147,7 @@ def process_and_show_sentimental_analysis_results(audio_file, transcribed, trans
         else:
             st.header(f"Sentiment Analysis  ")
             st.markdown("<font size='5'>  Model: {} </font>".format( model_select), unsafe_allow_html=True)
-            st.markdown("*" + print_sentiments(sentiment_label, sentiment_score) + "*")
+            st.markdown("*" + myu.print_sentiments(sentiment_label, sentiment_score) + "*")
 
 
 def process_and_show_new_sentimental_analysis_results(audio_file, transcribed, transcribed_text, model):
@@ -168,13 +170,13 @@ def process_and_show_new_sentimental_analysis_results(audio_file, transcribed, t
         if len(result) == 1:
             sentiment = result['sentiment'][0]
             score = result['polarity'][0]
-            st.markdown("*" + print_sentiments(sentiment, score) + "*")
+            st.markdown("*" + myu.print_sentiments(sentiment, score) + "*")
             if sentiment == 'error':
                 traceback.print_exc()
             else:
                 st.header(f"Sentiment Analysis  ")
                 st.markdown("<font size='5'>  Model: {} </font>".format( model_select), unsafe_allow_html=True)
-                st.markdown("*" + print_sentiments(sentiment, score) + "*")
+                st.markdown("*" + myu.print_sentiments(sentiment, score) + "*")
 
 
 def display_all_results_for_one_senetence(model, return_all, transcribed_text):
@@ -198,14 +200,14 @@ def display_all_results_for_one_senetence(model, return_all, transcribed_text):
         if k == 'flair':
             col1.markdown("<font size='5' align='center'> Model: {} </font>".format(k.upper()), unsafe_allow_html=True)
             col1.markdown("<font size='4' > Score: {} </font>".format(sentiment_score), unsafe_allow_html=True)
-            col1.subheader(f"{get_sentiment_emoji(sentiment_label.lower())} {sentiment_label}")
+            col1.subheader(f"{myu.get_sentiment_emoji(sentiment_label.lower())} {sentiment_label}")
             col1.info("""Flair, employs pre-trained language models and transfer 
                 learning to generate contextual string embeddings 
                 for sentiment analysis""")
         if k == 'vader':
             col2.markdown("<font size='5' align='center'> Model: {} </font>".format(k.upper()), unsafe_allow_html=True)
             col2.markdown("<font size='4' > Score: {} </font>".format(sentiment_score), unsafe_allow_html=True)
-            col2.subheader(f"{get_sentiment_emoji(sentiment_label.lower())} {sentiment_label}")
+            col2.subheader(f"{myu.get_sentiment_emoji(sentiment_label.lower())} {sentiment_label}")
             col2.info("""VADER (Valence Aware Dictionary 
                            and sEntiment Reasoner) is a rule-based model that uses a 
                            sentiment lexicon and grammatical rules to determine 
@@ -213,7 +215,7 @@ def display_all_results_for_one_senetence(model, return_all, transcribed_text):
         if k == 'textblob':
             col3.markdown("<font size='5' align='center'> Model: {} </font>".format(k.upper()), unsafe_allow_html=True)
             col3.markdown("<font size='4' > Score: {} </font>".format(sentiment_score), unsafe_allow_html=True)
-            col3.subheader(f"{get_sentiment_emoji(sentiment_label.lower())} {sentiment_label}")
+            col3.subheader(f"{myu.get_sentiment_emoji(sentiment_label.lower())} {sentiment_label}")
             col3.info("""TextBlob(default PatternAnalyzer) is a Python NLP library that uses a natural language toolkit (NLTK).  
                                            aTextblob it gives two outputs, which are polarity and subjectivity. 
                                            Polarity is the output that lies between [-1,1], where -1 refers to negative 
@@ -224,7 +226,7 @@ def display_all_results_for_one_senetence(model, return_all, transcribed_text):
         # if k == 'roberta':
         #     col4.markdown("<font size='5' align='center'> Model: {} </font>".format(k.upper()), unsafe_allow_html=True)
         #     col4.markdown("<font size='4' > Score: {} </font>".format(sentiment_score), unsafe_allow_html=True)
-        #     col4.subheader(f"{get_sentiment_emoji(sentiment_label.lower())} {sentiment_label}")
+        #     col4.subheader(f"{myu.get_sentiment_emoji(sentiment_label.lower())} {sentiment_label}")
         #     col4.info("""Twitter-roberta-base-sentiment is a roBERTa model trained
         #         on ~58M tweets and fine-tuned for sentiment analysis.
         #         Fine-tuning is the process of taking a pre-trained
@@ -234,7 +236,7 @@ def display_all_results_for_one_senetence(model, return_all, transcribed_text):
         if k == 'distilbert':
             col4.markdown("<font size='5' align='center'> Model: {} </font>".format(k.upper()), unsafe_allow_html=True)
             col4.markdown("<font size='4' > Score: {} </font>".format(sentiment_score), unsafe_allow_html=True)
-            col4.subheader(f"{get_sentiment_emoji(sentiment_label.lower())} {sentiment_label}")
+            col4.subheader(f"{myu.get_sentiment_emoji(sentiment_label.lower())} {sentiment_label}")
             col4.info("""DistilBERT is a smaller, faster and cheaper version of BERT. 
                 It has 40% smaller than BERT 
                 and runs 60% faster while preserving over 95% of BERT’s performance""")
@@ -251,7 +253,7 @@ def process_and_show_text_classification_results(audio_file, transcribed, transc
     if len(result) == 1:
         sentiment = result['sentiment'][0]
         score = result['polarity'][0]
-        st.markdown("*"+print_sentiments(sentiment, score)+ "*")
+        st.markdown("*"+myu.print_sentiments(sentiment, score)+ "*")
 
 
 def process_and_plot_text_classification_results(audio_file, transcribed, transcribed_text, return_all):
@@ -267,7 +269,7 @@ def process_and_plot_text_classification_results(audio_file, transcribed, transc
     st.header("Text Classification Results Analysis(Bert-base-uncased-emotion)")
     if return_all:
         resultDict = voiceAnalysisServices.perform_text_classification_using_bhadresh_savani(transcribed_text, return_all)
-        rsultDictionary=convert_to_new_dictionary(resultDict)
+        rsultDictionary=myu.convert_to_new_dictionary(resultDict)
         plot_to_charts(resultDict)
         # sentimental_results = []
         # for key, value in rsultDictionary.items():
@@ -276,13 +278,13 @@ def process_and_plot_text_classification_results(audio_file, transcribed, transc
         # st.markdown("*"+''.join(sentimental_results)+ "*")
     else:
         sentiment_label, sentiment_score = voiceAnalysisServices.perform_text_classification_using_bhadresh_savani(transcribed_text, return_all)
-        st.markdown("*"+print_sentiments(sentiment_label, sentiment_score)+ "*")
+        st.markdown("*"+myu.print_sentiments(sentiment_label, sentiment_score)+ "*")
 
 
 def display_sentiment_results(sentiment_results, option):
     sentiment_text = ""
     for sentiment, score in sentiment_results.items():
-        emoji = get_sentiment_emoji(sentiment)
+        emoji = myu.get_sentiment_emoji(sentiment)
         if option == "Sentiment Only":
             sentiment_text += f"{sentiment} {emoji}\n"
         elif option == "Sentiment + Score":
@@ -395,8 +397,8 @@ def main():
             # print(f'model_predict:{model_predict}')
             if model_predict != 'All' and model_predict != 'savani':
                 process_and_show_text_classification_results(None, True, text)
-    elif action in 'deepset':
-
+    # elif action in 'deepset':
+        
     elif action in 'Upload a file(text in each line)':
         st.markdown('*Upload a Text/csv File (text in each line)*')
         text_csv_file = st.sidebar.file_uploader("Browse", type=["txt", "csv"])
@@ -527,7 +529,10 @@ def plot_to_charts_savani(df1):
 
 if __name__ == "__main__":
     try:
-        main()
+        transcribed_text = voiceAnalysisServices.transcribe_audio_file('./voices/call_center_part-2b_sc.wav')
+        print('Semantic Analysis:')
+        voiceAnalysisServices.perform_sentiment_analysis_using_flair(transcribed_text,True)
+        # main()
     except Exception as ex:
         st.error("Error occurred during sentiment/textual analysis.")
         st.error(str(ex))

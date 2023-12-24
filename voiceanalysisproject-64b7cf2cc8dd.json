@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "voiceanalysisproject",
+  "private_key_id": "64b7cf2cc8dd2a52cf16e19fd7c3b2b36843aff8",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDxoi7LYeibk0Bk\n2pR37w0g+GfSlI4cTUsw4ktqkRWZVgqLwFZ717SEJnaWfZ0S76eVmBJxfOFe/LYX\nMLKOJlJUMJj85p1iZwiJB8avkhpklUdofQPiKiOdPYNQUfp5Z24XekRKcHbWCJm0\noBlpQFXTAk8jVecXWbZOCXsWY2JeBHJ5lDDoVu7cncjXPiLGg70eEo33jfb0uNae\nxrrHcK/DRwbTG9yej48z941ltJiuCtuhwy13ef0MZj4dN3FRdKyNDtOoCGfAMvNE\nU4RsqoShEk16uhlMuS4xAlSUHew24DkyaxfIHnVgpl5vZ8OsriNRdDzof9seipzw\n+t11vk/lAgMBAAECggEAE58ZvAPuLsf6gtYUbVgjpvQ/q2QggCAvWr+y48ChUjYg\nSBtCdURdu8d1z3Wm2NVONKxzKZ+8RgmGbdlTU+Nnwb9qhPWN0oz5rqBLhuakhFty\nP4QQryprLEcaT95AVTXMGlWgOwfpQSsp9CF2FCEYdw3pHZOfCZCMPcew+kSaxcs1\nQATrXgYvzbv6gHVf/70Umh/ApFt6q42ZHHZnWIil/QysQ3H6RfcX9MOJfDMo4PZo\n6Ndy6m23VHTUh2TOQ+obRuQMiwEcag/RFFjWS6iwyPJ4GLJ7EGegvbzSzmD4fEsr\n1hEwszYZygWZ2yidQzPiLsTTeNtVRctCqvFpg1gBsQKBgQD+7/wk4yVockrKW8fA\n2fHnsferMvF0GZXN7OgEDqb9Uy8QTGNqhoISLTD6YJbt02q1UnIK8g30AeSyMkat\n2buLMQJWqD3LlD0C6TrgQ4HNgThFjkaoTJ3PAQduonOJ37EdGw1Vvm/z+NTyd6Kj\nR03LjhGhbo+HkAWJx9h9DAwr3QKBgQDypACzuoae7Y/HHi/tu2t8lLYo7AjY8a9B\npY4BQvVFGLq/Oa/TGQ2g4vqUF0auGFpTQjk3BO49WoLILEPpREAViMDni96+0GqN\nMru0vZ+z3N791oEAihdbLV8QaOzo/HgJaFTgw8ncRo01YbY+AzzbFkqhzyfnbfGp\nrviVqM6XqQKBgG6ajakvRx5+X4ZVtV8s7y+XXZ1P18OICh8yRiLkfHxxZ3zJt2QT\nAUGDi7lEyJZb3/LU1xd6lqUjYSYSe+mXCi/EToBsM4ssQCAQMfP0Nc+D3XcH2A3S\nV7DkgGX2YuwROZUoFGv72DRf43tifhQarly+wVVpUyn8SPrS0lDGNk2dAoGBAM2A\nnZ+bMP1V0tof9RPyEn03LnjGQFANkhOVdgoXfcgBw9jFsOanZ2WGGBhpBlHZCldN\n1UuF/4kzKWUEKJheV7BlXIw/aG5P8o6YE2Zm2+XoAW0XybZ9Pn7YlJU/aLeDbN76\n4DhlWogXsO0vTryC3X3pCVi2LOPTuEOwj5WhnSfRAoGAAM7V20D6rIOP0o34IvUf\nk4pEvbbkpzeRUtA8tpQX6gIuHzUl4JN3VemxcUXend0aiQCjwmEdk2tiTqL7vkvm\nAKDymnXfmsbX9SBmH4Z8yLQz6YuLCH5l02RwFQrKy+RYFVinVrA2rhpiRaqRIGzN\nkZeEomphzHG7EBVepjB1dj0=\n-----END PRIVATE KEY-----\n",
+  "client_email": "voice-analysis@voiceanalysisproject.iam.gserviceaccount.com",
+  "client_id": "113142012082876037594",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/voice-analysis%40voiceanalysisproject.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
