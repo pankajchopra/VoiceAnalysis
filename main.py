@@ -26,6 +26,8 @@ st.set_page_config(layout="wide")
 actionRadioButtonState = st.session_state.get("enable_radio", {"value": True})
 uploadButtonState = st.session_state.get("enable_upload", {"value": True})
 st.markdown(' # FA/Client Sentiment Analysis!')
+
+
 # footer = st.footer('Author: *Pankaj Kumar Chopra*')
 # st.markdown(
 #     """
@@ -37,11 +39,15 @@ st.markdown(' # FA/Client Sentiment Analysis!')
 #     unsafe_allow_html=True
 # )
 # st.image('work-in-progress.png', width=100)
+
+
 with st.sidebar:
     st.title("Audio Analysis")
-    st.markdown("_last deploy: 7/27/2022_")
-    st.markdown("_last deploy: 12/24/2023_")
-    st.markdown("_last deploy: 12/30/2023_")
+    with st.expander("Deploy Dates: 12/30/2023 (current)"):
+        st.markdown("_last deploy: 12/30/2023_")
+        st.markdown("_last deploy: 12/24/2023_")
+        st.markdown("_last deploy: 7/27/2022_")
+
     st.write("""The Audio Analysis app is a powerful tool that allows you to analyze audio files 
                      and gain valuable insights from them. It combines speech recognition 
                      and sentiment analysis techniques to transcribe the audio 
@@ -349,9 +355,12 @@ def main():
     status_area = st.markdown('')
     if action in 'Sample Audio':
         with st.sidebar:
-            process_sample1_button = st.button("Sample 1 ( Last Live Audio)", key=1)
-            process_sample2_button = st.button("Call Center Sample", key=2)
-            process_sample3_button = st.button("Sample 3", key=3)
+            process_sample1_button = st.button("Sample 1 ( Last Live Audio) :aries", key=1, help='Click to Analyse')
+            st.audio('./recorded.mp3')
+            process_sample2_button = st.button("Call Center Sample", key=2, help='Click to Analyse')
+            st.audio('./voices/call_center.wav')
+            process_sample3_button = st.button("Sample 3", key=3, help='Click to Analyse')
+            st.audio('./voices/OSR_us_000_0019_8k.wav')
             # col1, col2 = st.columns([1, 2])
             # col1.markdown("**Upload an audio file (format = wav only) **")
             # col2.markdown("*Do not upload music wav file it will give error(s).*")
