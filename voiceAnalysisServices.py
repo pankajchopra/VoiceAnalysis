@@ -11,8 +11,9 @@ from deepmultilingualpunctuation import PunctuationModel
 from loadModules import LoadModules
 from nltk.tokenize import sent_tokenize
 import os
-from google.cloud import speech_v1p1beta1 as speech
-import traceback
+
+# from google.cloud import speech_v1p1beta1 as speech
+# import traceback
 # from punctuator import Punctuator
 
 # import gradio as gr
@@ -27,20 +28,22 @@ import traceback
 distilbert_base_uncased_model = "distilbert-base-uncased-finetuned-sst-2-english"
 bhadresh_savani_bert_base_uncased_emotion_model = "bhadresh-savani/bert-base-uncased-emotion"
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./voiceanalysisproject-64b7cf2cc8dd.json"
+# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./voiceanalysisproject-64b7cf2cc8dd.json"
+
 
 class VoiceAnalysisServices(LoadModules):
     load_Modules = LoadModules(False)
 
     def __init__(self):
         print('in VoiceAnalysisServices constructor')
-        if (self.load_Modules == None):
+        if self.load_Modules is None:
             self.load_Modules = LoadModules(False)
 
     def perform_sentiment_analysis(self, text, return_all, model, isFileUpload=False):
         if 'current_model' not in st.session_state:
             print(f'Setting the current_model as {model}')
             st.session_state['current_model'] = model
+
         print(f' Model parameter is {model}')
         if model == 'distilbert':
             st.session_state['current_model'] = model
@@ -63,10 +66,14 @@ class VoiceAnalysisServices(LoadModules):
         elif model == 'savani':
             print(f' Using Model {model}')
             st.session_state['current_model'] = model
-            if type(text) != str:
-                return self.perform_text_classification_using_bhadresh_savani(text, return_all)
+            if isinstance(text, str) or isinstance(text, list):
+                return self.perform_text_classification_using_old_bhadresh_savani(text, return_all)
+                # return result.iloc[0]['sentiment'], result.iloc[0]['polarity']
+            elif isinstance(text, pd.DataFrame):
+                return self.perform_text_classification_using_bhadresh_savani(text, False)
+                # return result.iloc[0]['sentiment'], result.iloc[0]['polarity']
             else:
-                return self.perform_text_classification_using_old_bhadresh_savani(text, False)
+                print("Error!! wrong text type!!!!!!!!!!!!!!!!!!!!")
         elif model == 'textblob':
             print(f' Using Model {model}')
             st.session_state['current_model'] = model
@@ -89,23 +96,28 @@ class VoiceAnalysisServices(LoadModules):
                 print('Not found flair_sentiment LoadModules.all_modules, loading...')
                 flair_sentiment = self.load_Modules.load_model_flair()
                 # print(LoadModules.all_modules.keys())
+
             # download model
             # flair_sentiment = flair.models.TextClassifier.load('en-sentiment')
-            sentences = [Sentence(sent, use_tokenizer=False) for sent in text]
+            if type(text) == list:
+                sentences = [Sentence(sent, use_tokenizer=False) for sent in text]
+            else:
+                sentences = [Sentence(text)]
+
             for sentence in sentences:
                 flair_sentiment.predict(sentence)
-        
+
             # Aggregate sentiment scores for the entire paragraph
             overall_sentiment_score = sum([sentence.labels[0].score for sentence in sentences]) / len(sentences)
-            overall_sentiment_label = self.calcSentiment(overall_sentiment_score, -0.001,0.001)
+            overall_sentiment_label = self.calcSentiment(overall_sentiment_score, -0.001, 0.001)
             print(overall_sentiment_score)
             print(overall_sentiment_label)
-            model = st.session_state['current_model']
-            # print(f'Sentiment analysis {model} results are {total_sentiment}')
+            # model = st.session_state['current_model']
+            print(f'Sentiment analysis (flair) results are {overall_sentiment_score}')
             if return_all:
-                return overall_sentiment_score, overall_sentiment_label
+                return overall_sentiment_label, overall_sentiment_score
             elif overall_sentiment_score:
-                return overall_sentiment_score, overall_sentiment_label
+                return overall_sentiment_label, overall_sentiment_score
             else:
                 return 'bad_data', 'Not Enough or Bad Data'
         except Exception as ex:
@@ -114,12 +126,25 @@ class VoiceAnalysisServices(LoadModules):
             return "error", str(ex)
 
     def calcSentiment(self, score, min, max):
-        if score >min and score < max :
+        if score > min and score < max:
             return 'Neutral'
-        elif score <=min :
+        elif score <= min:
             return 'Negative'
-        elif score >=max :
+        elif score >= max:
             return 'Positive'
+
+    def calcSentimentWithLabelAlso(self, result):
+        negatives = sum(r['score'] for r in result if r['label']=='NEGATIVE')
+        negatives_count = sum(1 for r in result if r['label'] == 'NEGATIVE')
+        positives = sum(r['score'] for r in result if r['label'] == 'POSITIVE')
+        positives_count = sum(1 for r in result if r['label'] == 'POSITIVE')
+        if positives_count> negatives_count:
+            return 'POSITIVE', positives / positives_count
+        elif positives_count == negatives_count:
+            return 'NEUTRAL', positives / positives_count
+        else:
+            return 'NEGATIVE', negatives / negatives_count
+
     def perform_sentiment_analysis_all(self, text):
         print('In perform_sentiment_analysis_all')
         sentiment_and_scores = dict()
@@ -138,6 +163,7 @@ class VoiceAnalysisServices(LoadModules):
     def perform_sentiment_analysis_using_textblob(self, text):
         if isinstance(text, list):
             text = ' '.join(text)
+            print(' text in perform_sentiment_analysis_using_textblob:' + text)
         try:
             print('Nothing to Load for textBlob')
             sentiment_label, sentiment_score = self.text_blob_sentiments(text)
@@ -149,8 +175,10 @@ class VoiceAnalysisServices(LoadModules):
             return "error", str(ex)
 
     def perform_sentiment_analysis_using_distilbert(self, paragraph, return_all):
-        text = paragraph;
+        if type(paragraph) != list:
+            paragraph = sent_tokenize(paragraph)
 
+        print("distilbert - number lines in a paragraph" + str(len(paragraph)))
         # current_model = st.session_state['current_model']
         try:
             if LoadModules.all_modules and 'distilbert' in LoadModules.all_modules.keys():
@@ -159,14 +187,9 @@ class VoiceAnalysisServices(LoadModules):
             else:
                 print('Not found distilbert_sentiment_analysis global, loading...')
                 distilbert_sentiment_analysis = self.load_Modules.load_model_distilbert()
-            # model_name = "distilbert-base-uncased-finetuned-sst-2-english"
-            # sentiment_analysis = pipeline("sentiment-analysis", model=model_name, return_all_scores=return_all)
-            # results = distilbert_sentiment_analysis(text)
-            # text = " ".join(text)
-            # text = re.sub("[^a-zA-Z0-9]"," ",text) 
-            results  = self.analyze_sentiment_per_sentence(paragraph, distilbert_sentiment_analysis)
-            overall_sentiment_score = sum(result['score'] for result in results) / len(results)
-            overall_sentiment_label = self.calcSentiment(overall_sentiment_score, -0.001, +0.001)
+
+            results = self.analyze_sentiment_per_sentence(paragraph, distilbert_sentiment_analysis)
+            overall_sentiment_label, overall_sentiment_score = self.calcSentimentWithLabelAlso(results)
             print(f'Sentiment analysis (distilbert-base-uncased-finetuned-sst-2-english) results are {results}')
             if return_all:
                 return overall_sentiment_label, overall_sentiment_score
@@ -193,9 +216,15 @@ class VoiceAnalysisServices(LoadModules):
 
     # Text Classification input text has to be in the dataframe
     def perform_text_classification_using_bhadresh_savani(self, text_in_a_dataframe, return_all):
-        if isinstance(text_in_a_dataframe, list):
-            text = ' '.join(text_in_a_dataframe)
-            text_in_a_dataframe = pd.DataFrame({"text":[text]})
+        # print("text_in_a_dataframe:"+text_in_a_dataframe)
+        # if type(text_in_a_dataframe) == list or isinstance(text_in_a_dataframe, list):
+        #     t_text = ' '.join(text_in_a_dataframe)
+        #     text_in_a_dataframe = pd.DataFrame({"text": [t_text]})
+        #     print("it is a list")
+        # elif type(text_in_a_dataframe) == str:
+        #     text_in_a_dataframe = pd.DataFrame({"text": [text_in_a_dataframe]})
+        #     print("it is a str")
+
         # model_name = "bhadresh-savani/bert-base-uncased-emotion"
         # savani_classification = pipeline("text-classification", model=model_name, return_all_scores=return_all)
         if LoadModules.all_modules and 'savani' in LoadModules.all_modules.keys():
@@ -206,6 +235,7 @@ class VoiceAnalysisServices(LoadModules):
             savani_classification = self.load_Modules.load_model_bhadresh_savani()
 
         text_in_a_dataframe['result'] = text_in_a_dataframe["text"].apply(savani_classification)
+
         text_in_a_dataframe['result'] = text_in_a_dataframe['result'].apply(lambda x: x[0])
         text_in_a_dataframe[['label', 'score']] = text_in_a_dataframe['result'].apply(pd.Series)
         text_in_a_dataframe['result'].apply(pd.Series)
@@ -216,7 +246,7 @@ class VoiceAnalysisServices(LoadModules):
         result = pd.DataFrame()
         result['sentiment'] = text_in_a_dataframe['label']
         result['polarity'] = text_in_a_dataframe['score']
-        print(f'Text Classification Analysis results are {result.sample()}')
+        print(f'Text Classification Analysis results are {result}')
         # if return_all:
         del text_in_a_dataframe
         gc.collect()
@@ -276,28 +306,28 @@ class VoiceAnalysisServices(LoadModules):
             audio = r.record(source)
             try:
                 transcribed_text1 = r.recognize_google(audio, language='en-US')
-                print("un-punctionuated transcribed text:{}".format(transcribed_text1))
-                punctuationModel = PunctuationModel()
-                transcribed_text2 = punctuationModel.restore_punctuation(transcribed_text1)
+                print("un-punctuated transcribed text:{}".format(transcribed_text1))
+                punctuation_model = PunctuationModel()
+                transcribed_text2 = punctuation_model.restore_punctuation(transcribed_text1)
                 # punctuatorModel = Punctuator('model.pcl')
                 # transcribed_text2 = punctuatorModel.punctuate(transcribed_text1)
-                print("Punctionuated transcribed text:{}".format(transcribed_text2))
+                print("Punctuated transcribed text:{}".format(transcribed_text2))
                 sentences = sent_tokenize(transcribed_text2)
+                return sentences
             except sr.UnknownValueError:
                 print("Google could not understand audio")
             except sr.RequestError as e:
                 print("Google/PunctionalModel error; {0}".format(e))
-            return sentences
 
-     
+
     def transcribe_audio_data(self, audio_data):
         try:
             r = sr.Recognizer()
             transcribed_text1 = r.recognize_google(audio_data, language='en-US')
-            print("un-punctionuated transcribed text:{}".format(transcribed_text1))
+            print("un-punctuated transcribed text:{}".format(transcribed_text1))
             punctuationModel = PunctuationModel()
             transcribed_text2 = punctuationModel.restore_punctuation(transcribed_text1)
-            print("Punctionuated transcribed text:{}".format(transcribed_text2))
+            print("Punctuated transcribed text:{}".format(transcribed_text2))
             sentences = sent_tokenize(transcribed_text2)
         except sr.UnknownValueError:
             print("Google could not understand audio")
@@ -305,42 +335,41 @@ class VoiceAnalysisServices(LoadModules):
             print("Google/PunctionalModel error; {0}".format(e))
         return sentences
 
+    # def transcribe_audio_with_punctuation(self, audio_file):
+    #     client = speech.SpeechClient()
+    #     transcribed_text = []
+    #     with open(audio_file, "rb") as audio_file:
+    #         content = audio_file.read()
 
-    def transcribe_audio_with_punctuation(self, audio_file):
-        client = speech.SpeechClient()
-        transcribed_text = []
-        with open(audio_file, "rb") as audio_file:
-            content = audio_file.read()
+    #     audio = speech.RecognitionAudio(content=content)
+    #     config = speech.RecognitionConfig(
+    #         encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
+    #         language_code="en-US",
+    #         enable_automatic_punctuation=True,  # Enable automatic punctuation
+    #     )
 
-        audio = speech.RecognitionAudio(content=content)
-        config = speech.RecognitionConfig(
-            encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
-            language_code="en-US",
-            enable_automatic_punctuation=True,  # Enable automatic punctuation
-        )
+    #     response = client.recognize(config=config, audio=audio)
 
-        response = client.recognize(config=config, audio=audio)
+    #     for result in response.results:
+    #         transcribed_text.append(result.alternatives[0].transcript)
+    #         print("Transcript: {}".format(result.alternatives[0].transcript))
 
-        for result in response.results:
-            transcribed_text.append(result.alternatives[0].transcript)
-            print("Transcript: {}".format(result.alternatives[0].transcript))
-        
-        transcribed_text = " ".join(transcribed_text)
-        sentences = sent_tokenize(transcribed_text)
-        return sentences
-        
-   
+    #     transcribed_text = " ".join(transcribed_text)
+    #     sentences = sent_tokenize(transcribed_text)
+    #     return sentences
 
     def text_blob_sentiments(self, text):
         # Create a TextBlob object
         try:
             output = TextBlob(text)
+            print('text_blob_sentiments output:')
+            print(output)
             if output:
                 polarity = output.sentiment.polarity
                 subjectivity = output.subjectivity
-                if -0.02 > polarity and subjectivity > 0:
+                if -0.001 > polarity and subjectivity > 0:
                     return 'NEGATIVE', polarity
-                elif -0.02 <= polarity <= 0.02:
+                elif -0.001 <= polarity <= 0.001:
                     return 'NEUTRAL', polarity
                 else:
                     return 'POSITIVE', polarity
@@ -418,7 +447,9 @@ class VoiceAnalysisServices(LoadModules):
     # function to print sentiments
     # of the sentence.
     def perform_sentiment_analysis_using_vader(self, paragraph):
-        
+        if type(paragraph) != list:
+            paragraph = sent_tokenize(paragraph)
+
         vader_obj = None
         if LoadModules.all_modules and 'vader' in LoadModules.all_modules.keys():
             print('Found vader_obj in LoadModules.all_modules')
@@ -431,45 +462,44 @@ class VoiceAnalysisServices(LoadModules):
         # object gives a sentiment dictionary.
         # which contains pos, neg, neu, and compound scores.
         sentiments_dict = [vader_obj.polarity_scores(sentence)['compound'] for sentence in paragraph]
+        print("Vader number of sentences:"+str(len(sentiments_dict)))
         # Calculate overall sentiment for the entire paragraph
         overall_sentiment = sum(sentiments_dict) / len(sentiments_dict)
-    
+
         # sentiment_dict = vader_obj.polarity_scores(paragraph)
-        print(f'Semtiment Analysis (Vader) results are {overall_sentiment}')
+        print(f'Sentiment Analysis (Vader) results are {overall_sentiment}')
         if overall_sentiment:
             # decide sentiment as positive, negative and neutral
-            if overall_sentiment['compound'] >= 0.001:
+            if overall_sentiment >= 0.001:
                 sentiment_label = 'Positive'
-                sentiment_score = sentiment_dict['pos']
-            elif overall_sentiment['compound'] <= - 0.001:
+                sentiment_score = overall_sentiment
+            elif overall_sentiment <= - 0.001:
                 sentiment_label = 'Negative'
-                sentiment_score = sentiment_dict['neg']
+                sentiment_score = overall_sentiment
             else:
                 sentiment_label = 'Neutral'
-                sentiment_score = sentiment_dict['neu']
+                sentiment_score = overall_sentiment
             return sentiment_label, sentiment_score
         else:
             return 'bad_data', 'Bad Data or Insufficient Data'
 
     def convertTextToSentences(self, text):
-         # Tokenize the paragraph into sentences
+        # Tokenize the paragraph into sentences
         sentences = [Sentence(sent, use_tokenizer=True) for sent in text]
         return sentences
 
-if __name__ == "__main__":
-    try:
-        voiceAnalysisServices = VoiceAnalysisServices()
-        transcribed_text = voiceAnalysisServices.transcribe_audio_file('./voices/call_center_part-2b_sc.wav')
-        print( voiceAnalysisServices.perform_sentiment_analysis_using_sam_lowe(transcribed_text, True))
-        # voiceAnalysisServices.perform_text_classification_using_bhadresh_savani(transcribed_text, True)
-        # voiceAnalysisServices.perform_sentiment_analysis_using_textblob(transcribed_text)
-        # print(voiceAnalysisServices.perform_sentiment_analysis_using_distilbert(transcribed_text, True))
-        # voiceAnalysisServices.perform_sentiment_analysis_using_vader(transcribed_text)
-        # voiceAnalysisServices.perform_sentiment_analysis_using_flair(transcribed_text, True)
-        # main()
-    except Exception as ex:
-        st.error("Error occurred during sentiment/textual analysis.")
-        st.error(str(ex))
-        traceback.print_exc()
-
-
+# if __name__ == "__main__":
+#     try:
+#         voiceAnalysisServices = VoiceAnalysisServices()
+#         transcribed_text = voiceAnalysisServices.transcribe_audio_file('./voices/call_center_part-2b_sc.wav')
+#         print( voiceAnalysisServices.perform_sentiment_analysis_using_sam_lowe(transcribed_text, True))
+#         # voiceAnalysisServices.perform_text_classification_using_bhadresh_savani(transcribed_text, True)
+#         # voiceAnalysisServices.perform_sentiment_analysis_using_textblob(transcribed_text)
+#         # print(voiceAnalysisServices.perform_sentiment_analysis_using_distilbert(transcribed_text, True))
+#         # voiceAnalysisServices.perform_sentiment_analysis_using_vader(transcribed_text)
+#         # voiceAnalysisServices.perform_sentiment_analysis_using_flair(transcribed_text, True)
+#         # main()
+#     except Exception as ex:
+#         st.error("Error occurred during sentiment/textual analysis.")
+#         st.error(str(ex))
+#         traceback.print_exc()

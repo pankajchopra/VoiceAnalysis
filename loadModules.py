@@ -9,7 +9,7 @@ class LoadModules:
     def __init__(self, loadAllModule):
         print('in LoadModules constructor')
         if loadAllModule:
-            self.all_modules = self.load_all_models();
+            self.all_modules = self.load_all_models()
 
     def load_model_vader(self):
         try:
@@ -98,4 +98,6 @@ class LoadModules:
             return self.load_model_sam_lowe()
         if 'deepset' in model:
             return self.load_deepset_roberta_base_squad2()
+        else:
+            print("Nothing to load")
 
