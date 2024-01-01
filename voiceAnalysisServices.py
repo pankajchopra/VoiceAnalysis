@@ -36,7 +36,9 @@ class VoiceAnalysisServices(LoadModules):
     def __init__(self):
         print('in VoiceAnalysisServices constructor')
         if self.load_Modules is None:
-            self.load_Modules = LoadModules(False)
+            self.load_Modules = LoadModules(True)
+        else:
+            print('load_Modules already loaded')
 
     def perform_sentiment_analysis(self, text, return_all, model, isFileUpload=False):
         if 'current_model' not in st.session_state:
@@ -88,9 +90,9 @@ class VoiceAnalysisServices(LoadModules):
     def perform_sentiment_analysis_using_flair(self, text, return_all):
         try:
             flair_sentiment = None
-            if LoadModules.all_modules and 'flair' in LoadModules.all_modules.keys():
+            if self.all_modules and 'flair' in self.all_modules.keys():
                 print('Found flair_sentiment in LoadModules.all_modules')
-                flair_sentiment = LoadModules.all_modules['flair']
+                flair_sentiment = self.all_modules['flair']
             else:
                 print('Not found flair_sentiment LoadModules.all_modules, loading...')
                 flair_sentiment = self.load_Modules.load_model_flair()
@@ -178,9 +180,9 @@ class VoiceAnalysisServices(LoadModules):
         print("distilbert - number lines in a paragraph" + str(len(paragraph)))
         # current_model = st.session_state['current_model']
         try:
-            if LoadModules.all_modules and 'distilbert' in LoadModules.all_modules.keys():
+            if self.all_modules and 'distilbert' in self.all_modules.all_modules.keys():
                 print('Found distilbert_sentiment_analysis in global')
-                distilbert_sentiment_analysis = LoadModules.all_modules['distilbert']
+                distilbert_sentiment_analysis = self.all_modules['distilbert']
             else:
                 print('Not found distilbert_sentiment_analysis global, loading...')
                 distilbert_sentiment_analysis = self.load_Modules.load_model_distilbert()
@@ -224,9 +226,9 @@ class VoiceAnalysisServices(LoadModules):
 
         # model_name = "bhadresh-savani/bert-base-uncased-emotion"
         # savani_classification = pipeline("text-classification", model=model_name, return_all_scores=return_all)
-        if LoadModules.all_modules and 'savani' in LoadModules.all_modules.keys():
+        if self.all_modules and 'savani' in self.all_modules.all_modules.keys():
             print('Found savani_classification in LoadModules.all_modules')
-            savani_classification = LoadModules.all_modules['savani']
+            savani_classification = self.all_modules.all_modules['savani']
         else:
             print('Not found savani_classification LoadModules.all_modules, loading')
             savani_classification = self.load_Modules.load_model_bhadresh_savani()
@@ -257,9 +259,9 @@ class VoiceAnalysisServices(LoadModules):
             text = ' '.join(text)
         # model_name = "bhadresh-savani/bert-base-uncased-emotion"
         # savani_classification = pipeline("text-classification", model=model_name, return_all_scores=return_all)
-        if LoadModules.all_modules and 'savani' in LoadModules.all_modules.keys():
+        if self.all_modules and 'savani' in self.all_modules.all_modules.keys():
             print('Found savani_classification in LoadModules.all_modules')
-            savani_classification = LoadModules.all_modules['savani']
+            savani_classification = self.all_modules['savani']
         else:
             print('Not found savani_classification LoadModules.all_modules, loading')
             savani_classification = self.load_Modules.load_model_bhadresh_savani()
@@ -284,9 +286,9 @@ class VoiceAnalysisServices(LoadModules):
             text = ' '.join(text)
         # current_model = st.session_state['current_model']
         sam_lowe_classification = None
-        if LoadModules.all_modules and 'samLowe' in LoadModules.all_modules.keys():
+        if self.all_modules and 'samLowe' in self.all_modules.keys():
             print('Found sam_lowe_classification in global')
-            sam_lowe_classification = LoadModules.all_modules['savani']
+            sam_lowe_classification = self.all_modules['samLowe']
         else:
             print('Not found sam_lowe_classification global, loading...')
             sam_lowe_classification = self.load_Modules.load_model_sam_lowe(False)
@@ -310,10 +312,10 @@ class VoiceAnalysisServices(LoadModules):
                 transcribed_text1 = r.recognize_google(audio, language='en-US')
                 print("un-punctuated transcribed text:{}".format(transcribed_text1))
                 if LoadModules.all_modules and 'punctuation' in LoadModules.all_modules.keys():
-                    print('Found sam_lowe_classification in global')
+                    print('Found punctuation model')
                     punctuation_model = LoadModules.all_modules['punctuation']
                 else:
-                    print('Not found sam_lowe_classification global, loading...')
+                    print('Not found punctuation model , loading...')
                     punctuation_model = self.load_Modules.load_punctuation_model()
 
                 transcribed_text2 = punctuation_model.restore_punctuation(transcribed_text1)
