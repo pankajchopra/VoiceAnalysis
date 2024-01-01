@@ -341,11 +341,11 @@ def doActualthings(status_area, audio_file, model):
         # process_and_show_sentimental_analysis_results(None, True, transcribed_text, model)
         process_and_show_new_sentimental_analysis_results(None, True, transcribed_text, model)
 
-        if model_predict != 'All' and model_predict != 'savani':
-            progressBar.progress(70, 'Textual Classification..')
-            write_current_status(status_area, f'Text Classification of {audio_file}...')
-            process_and_show_text_classification_results(audio_file, True, transcribed_text)
-            progressBar.progress(90, 'Textual Classification Done...')
+        # if model_predict != 'All' and model_predict != 'savani':
+        #     progressBar.progress(70, 'Textual Classification..')
+        #     write_current_status(status_area, f'Text Classification of {audio_file}...')
+        #     process_and_show_text_classification_results(audio_file, True, transcribed_text)
+        #     progressBar.progress(90, 'Textual Classification Done...')
         # write_current_status(status_area, 'Finished Processing!! ')
         progressBar.progress(100, 'Done, Finished Processing!!')
 
@@ -409,7 +409,7 @@ def main():
         try:
             if recorded_audio_in_bytes is not None:
                 print("got Audio")
-                if len(recorded_audio_in_bytes) > 0:
+                if recorded_audio_in_bytes and len(recorded_audio_in_bytes) > 0:
                     # convert to a wav file
                     wav_file = open("recorded.mp3", "wb")
                     wav_file.truncate()
@@ -433,8 +433,8 @@ def main():
             # st.header("Seman Classification Results Analysis(Bert-base-uncased-emotion)")
             process_and_show_sentimental_analysis_results(None, True, text, model_predict)
             # print(f'model_predict:{model_predict}')
-            if model_predict != 'All' and model_predict != 'savani':
-                process_and_show_text_classification_results(None, True, text)
+            # if model_predict != 'All' and model_predict != 'savani':
+            #     process_and_show_text_classification_results(None, True, text)
     elif action in 'Upload a file(text in each line)':
         st.markdown('*Upload a Text/csv File (text in each line)*')
         text_csv_file = st.sidebar.file_uploader("Browse", type=["txt", "csv"])

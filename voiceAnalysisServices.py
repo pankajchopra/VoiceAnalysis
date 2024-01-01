@@ -10,6 +10,7 @@ from flair.data import Sentence
 from loadModules import LoadModules
 from nltk.tokenize import sent_tokenize
 import os
+import myUtilityDefs as myu
 
 from google.cloud import speech_v1p1beta1 as speech
 # import traceback
@@ -354,7 +355,9 @@ class VoiceAnalysisServices(LoadModules):
     def transcribe_audio_with_punctuation(self, audio_file):
         client = speech.SpeechClient()
         transcribed_text = []
-        with open(audio_file, "rb") as audio_file:
+        output_file = 'recorded_mono.wav'
+        myu.convert_to_mono(audio_file,  output_file )
+        with open(output_file, "rb") as audio_file:
             content = audio_file.read()
 
         audio = speech.RecognitionAudio(content=content)
