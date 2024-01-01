@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ec3b2fa7-e5a1-463b-9ff4-d7ce5e5db743" name="Changes" comment="Fixed Memory Issues replaced Punctionation model with Google Cloud">
+    <list default="true" id="ec3b2fa7-e5a1-463b-9ff4-d7ce5e5db743" name="Changes" comment="Fixed Google Cloud transscribe. converted coice files to single channel and less than 1 minute long">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/myUtilityDefs.py" beforeDir="false" afterPath="$PROJECT_DIR$/myUtilityDefs.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/voiceAnalysisServices.py" beforeDir="false" afterPath="$PROJECT_DIR$/voiceAnalysisServices.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/loadModules.py" beforeDir="false" afterPath="$PROJECT_DIR$/loadModules.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -277,15 +275,7 @@
       <workItem from="1703440599927" duration="38099000" />
       <workItem from="1703973370967" duration="576000" />
       <workItem from="1703973963712" duration="28772000" />
-      <workItem from="1704129469652" duration="9855000" />
-    </task>
-    <task id="LOCAL-00017" summary="added Upload Audio files and other refactoring">
-      <option name="closed" value="true" />
-      <created>1688834169193</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1688834169193</updated>
+      <workItem from="1704129469652" duration="10841000" />
     </task>
     <task id="LOCAL-00018" summary="added Upload Audio files and other refactoring">
       <option name="closed" value="true" />
@@ -671,7 +661,15 @@
       <option name="project" value="LOCAL" />
       <updated>1704139602596</updated>
     </task>
-    <option name="localTasksCounter" value="66" />
+    <task id="LOCAL-00066" summary="Fixed Google Cloud transscribe. converted coice files to single channel and less than 1 minute long">
+      <option name="closed" value="true" />
+      <created>1704145239222</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1704145239223</updated>
+    </task>
+    <option name="localTasksCounter" value="67" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -692,7 +690,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="added Upload Audio files and other refactoring" />
     <MESSAGE value="added ntk_data" />
     <MESSAGE value="added nltk_data" />
     <MESSAGE value="Fixed Progress bar and added call_center sample" />
@@ -717,7 +714,8 @@
     <MESSAGE value="Added audio play for voice" />
     <MESSAGE value="Fixed Memory Issues" />
     <MESSAGE value="Fixed Memory Issues replaced Punctionation model with Google Cloud" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed Memory Issues replaced Punctionation model with Google Cloud" />
+    <MESSAGE value="Fixed Google Cloud transscribe. converted coice files to single channel and less than 1 minute long" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed Google Cloud transscribe. converted coice files to single channel and less than 1 minute long" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

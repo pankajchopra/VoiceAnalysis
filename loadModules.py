@@ -1,7 +1,6 @@
 from transformers import pipeline
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import flair
-from deepmultilingualpunctuation import PunctuationModel
 
 
 class LoadModules:
