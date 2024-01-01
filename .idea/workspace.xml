@@ -7,6 +7,8 @@
     <list default="true" id="ec3b2fa7-e5a1-463b-9ff4-d7ce5e5db743" name="Changes" comment="Fixed Memory Issues">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/loadModules.py" beforeDir="false" afterPath="$PROJECT_DIR$/loadModules.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/voiceAnalysisServices.py" beforeDir="false" afterPath="$PROJECT_DIR$/voiceAnalysisServices.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -276,23 +278,7 @@
       <workItem from="1703440599927" duration="38099000" />
       <workItem from="1703973370967" duration="576000" />
       <workItem from="1703973963712" duration="28772000" />
-      <workItem from="1704129469652" duration="2305000" />
-    </task>
-    <task id="LOCAL-00014" summary="added requirements.txt and streamlit config">
-      <option name="closed" value="true" />
-      <created>1688699604593</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1688699604593</updated>
-    </task>
-    <task id="LOCAL-00015" summary="added requirements.txt and streamlit config">
-      <option name="closed" value="true" />
-      <created>1688699713734</created>
-      <option name="number" value="00015" />
-      <option name="presentableId" value="LOCAL-00015" />
-      <option name="project" value="LOCAL" />
-      <updated>1688699713734</updated>
+      <workItem from="1704129469652" duration="6726000" />
     </task>
     <task id="LOCAL-00016" summary="added requirements.txt and streamlit config">
       <option name="closed" value="true" />
@@ -670,7 +656,23 @@
       <option name="project" value="LOCAL" />
       <updated>1704132157809</updated>
     </task>
-    <option name="localTasksCounter" value="63" />
+    <task id="LOCAL-00063" summary="Fixed Memory Issues">
+      <option name="closed" value="true" />
+      <created>1704133892220</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1704133892220</updated>
+    </task>
+    <task id="LOCAL-00064" summary="Fixed Memory Issues">
+      <option name="closed" value="true" />
+      <created>1704134024679</created>
+      <option name="number" value="00064" />
+      <option name="presentableId" value="LOCAL-00064" />
+      <option name="project" value="LOCAL" />
+      <updated>1704134024680</updated>
+    </task>
+    <option name="localTasksCounter" value="65" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

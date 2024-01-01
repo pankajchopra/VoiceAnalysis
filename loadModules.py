@@ -58,15 +58,15 @@ class LoadModules:
 
 
 
-    def load_punctuation_model(self):
-        try:
-            LoadModules.all_modules['punctuation'] = PunctuationModel()
-            print('loaded PunctuationModel model')
-            return LoadModules.all_modules['punctuation']
-        except Exception as ex:
-            print("Error occurred during .. load_punctuation_model")
-            print(str(ex))
-            return "error", str(ex)
+    # def load_punctuation_model(self):
+    #     try:
+    #         LoadModules.all_modules['punctuation'] = PunctuationModel()
+    #         print('loaded PunctuationModel model')
+    #         return LoadModules.all_modules['punctuation']
+    #     except Exception as ex:
+    #         print("Error occurred during .. load_punctuation_model")
+    #         print(str(ex))
+    #         return "error", str(ex)
 
 
     def load_model_bhadresh_savani(self):

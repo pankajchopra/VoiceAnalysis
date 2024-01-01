@@ -134,9 +134,9 @@ def display_all_results_for_multiple_sentence(model, return_all, transcribed_tex
 def process_and_show_sentimental_analysis_results(audio_file, transcribed, transcribed_text, model):
     if not transcribed and audio_file:
         st.write(f'Processing {audio_file}...')
-        transcribed_text = voiceAnalysisServices.transcribe_audio_file(audio_file)
+        # transcribed_text = voiceAnalysisServices.transcribe_audio_file(audio_file)
         # this uses google cloud (paid)
-        # transcribed_text = voiceAnalysisServices.transcribe_audio_with_punctuation(audio_file)
+        transcribed_text = voiceAnalysisServices.transcribe_audio_with_punctuation(audio_file)
         # st.header("Transcribed Text")
         st.text_area("Transcribed Text", " ".join(transcribed_text), key=1, height=150)
     else:
@@ -169,7 +169,7 @@ def process_and_show_sentimental_analysis_results(audio_file, transcribed, trans
 def process_and_show_new_sentimental_analysis_results(audio_file, transcribed, transcribed_text, model):
     if not transcribed and audio_file:
         st.write(f'Processing {audio_file}...')
-        transcribed_text = voiceAnalysisServices.transcribe_audio_file(audio_file)
+        transcribed_text = voiceAnalysisServices.transcribe_audio_with_punctuation(audio_file)
         # st.header("Transcribed Text")
         st.text_area("Transcribed Text", " ".join(transcribed_text), key=1, height=150)
     else:
@@ -268,7 +268,7 @@ def display_all_results_for_one_sentence(model, return_all, transcribed_text):
 def process_and_show_text_classification_results(audio_file, transcribed, transcribed_text):
     if not transcribed:
         st.write(f'Processing {audio_file}...')
-        transcribed_text = pd.DataFrame({"text": [' '.join(voiceAnalysisServices.transcribe_audio_file(audio_file))]})
+        transcribed_text = pd.DataFrame({"text": [' '.join(voiceAnalysisServices.transcribe_audio_with_punctuation(audio_file))]})
         st.text_area("Transcribed Text", transcribed_text, key=2, height=200)
 
     print(transcribed_text)
@@ -288,7 +288,7 @@ def process_and_show_text_classification_results(audio_file, transcribed, transc
 def process_and_plot_text_classification_results(audio_file, transcribed, transcribed_text, return_all):
     if not transcribed:
         st.write(f'Processing {audio_file}...')
-        tt = voiceAnalysisServices.transcribe_audio_file(audio_file)
+        tt = voiceAnalysisServices.transcribe_audio_with_punctuation(audio_file)
         transcribed_text = pd.DataFrame({"text": [tt]})
 
         # st.header("Transcribed Text")
@@ -299,7 +299,7 @@ def process_and_plot_text_classification_results(audio_file, transcribed, transc
     if return_all:
         resultDict = voiceAnalysisServices.perform_text_classification_using_bhadresh_savani(transcribed_text,
                                                                                              return_all)
-        rsultDictionary = myu.convert_to_new_dictionary(resultDict)
+        # rsultDictionary = myu.convert_to_new_dictionary(resultDict)
         plot_to_charts(resultDict)
         # sentimental_results = []
         # for key, value in rsultDictionary.items():
@@ -334,7 +334,7 @@ def doActualthings(status_area, audio_file, model):
 
         # write_current_status(main_status, f'   *Selected Sample File: {audio_file}*')
         write_current_status(status_area, f'Transcribing audio of  {audio_file}...')
-        transcribed_text = voiceAnalysisServices.transcribe_audio_file(audio_file)
+        transcribed_text = voiceAnalysisServices.transcribe_audio_with_punctuation(audio_file)
         progressBar.progress(40, 'Semantic Analysis..')
         write_current_status(status_area, f'''Semantic Analysis using {model_predict} 
                                             File Name: {audio_file}...''')
@@ -358,14 +358,14 @@ def main():
             process_sample1_button = st.button("Sample 1 ( Last Live Audio) :aries", key=1, help='Click to Analyse')
             st.audio('./recorded.mp3')
             process_sample2_button = st.button("Call Center Sample", key=2, help='Click to Analyse')
-            st.audio('./voices/call_center.wav')
+            st.audio('./voices/call_center_part-1sc.wav')
             process_sample3_button = st.button("Sample 3", key=3, help='Click to Analyse')
             st.audio('./voices/OSR_us_000_0019_8k.wav')
             # col1, col2 = st.columns([1, 2])
             # col1.markdown("**Upload an audio file (format = wav only) **")
             # col2.markdown("*Do not upload music wav file it will give error(s).*")
         audio_file1 = path.join(path.dirname(path.realpath(__file__)), "recorded.mp3")
-        audio_file2 = path.join(path.dirname(path.realpath(__file__)), "voices/call_center.wav")
+        audio_file2 = path.join(path.dirname(path.realpath(__file__)), "voices/call_center_part-1sc.wav")
         audio_file3 = path.join(path.dirname(path.realpath(__file__)), "voices/OSR_us_000_0019_8k.wav")
         try:
             if process_sample1_button:

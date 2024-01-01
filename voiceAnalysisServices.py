@@ -11,9 +11,9 @@ from loadModules import LoadModules
 from nltk.tokenize import sent_tokenize
 import os
 
-# from google.cloud import speech_v1p1beta1 as speech
+from google.cloud import speech_v1p1beta1 as speech
 # import traceback
-# from punctuator import Punctuator
+
 
 # import gradio as gr
 # import whisper
@@ -27,7 +27,7 @@ import os
 distilbert_base_uncased_model = "distilbert-base-uncased-finetuned-sst-2-english"
 bhadresh_savani_bert_base_uncased_emotion_model = "bhadresh-savani/bert-base-uncased-emotion"
 
-# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./voiceanalysisproject-64b7cf2cc8dd.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./voiceanalysisproject-64b7cf2cc8dd.json"
 
 
 class VoiceAnalysisServices(LoadModules):
@@ -180,7 +180,7 @@ class VoiceAnalysisServices(LoadModules):
         print("distilbert - number lines in a paragraph" + str(len(paragraph)))
         # current_model = st.session_state['current_model']
         try:
-            if self.all_modules and 'distilbert' in self.all_modules.all_modules.keys():
+            if self.all_modules and 'distilbert' in self.all_modules.keys():
                 print('Found distilbert_sentiment_analysis in global')
                 distilbert_sentiment_analysis = self.all_modules['distilbert']
             else:
@@ -226,9 +226,9 @@ class VoiceAnalysisServices(LoadModules):
 
         # model_name = "bhadresh-savani/bert-base-uncased-emotion"
         # savani_classification = pipeline("text-classification", model=model_name, return_all_scores=return_all)
-        if self.all_modules and 'savani' in self.all_modules.all_modules.keys():
+        if self.all_modules and 'savani' in self.all_modules.keys():
             print('Found savani_classification in LoadModules.all_modules')
-            savani_classification = self.all_modules.all_modules['savani']
+            savani_classification = self.all_modules['savani']
         else:
             print('Not found savani_classification LoadModules.all_modules, loading')
             savani_classification = self.load_Modules.load_model_bhadresh_savani()
@@ -259,7 +259,7 @@ class VoiceAnalysisServices(LoadModules):
             text = ' '.join(text)
         # model_name = "bhadresh-savani/bert-base-uncased-emotion"
         # savani_classification = pipeline("text-classification", model=model_name, return_all_scores=return_all)
-        if self.all_modules and 'savani' in self.all_modules.all_modules.keys():
+        if self.all_modules and 'savani' in self.all_modules.keys():
             print('Found savani_classification in LoadModules.all_modules')
             savani_classification = self.all_modules['savani']
         else:
@@ -304,75 +304,75 @@ class VoiceAnalysisServices(LoadModules):
             sentiment_score = results[0]['score']
             return sentiment_label, sentiment_score
 
-    def transcribe_audio_file(self, audio_file):
-        with sr.WavFile(audio_file) as source:
-            r = sr.Recognizer()
-            audio = r.record(source)
-            try:
-                transcribed_text1 = r.recognize_google(audio, language='en-US')
-                print("un-punctuated transcribed text:{}".format(transcribed_text1))
-                if LoadModules.all_modules and 'punctuation' in LoadModules.all_modules.keys():
-                    print('Found punctuation model')
-                    punctuation_model = LoadModules.all_modules['punctuation']
-                else:
-                    print('Not found punctuation model , loading...')
-                    punctuation_model = self.load_Modules.load_punctuation_model()
+    # def transcribe_audio_file(self, audio_file):
+    #     with sr.WavFile(audio_file) as source:
+    #         r = sr.Recognizer()
+    #         audio = r.record(source)
+    #         try:
+    #             transcribed_text1 = r.recognize_google(audio, language='en-US')
+    #             print("un-punctuated transcribed text:{}".format(transcribed_text1))
+    #             if LoadModules.all_modules and 'punctuation' in LoadModules.all_modules.keys():
+    #                 print('Found punctuation model')
+    #                 punctuation_model = LoadModules.all_modules['punctuation']
+    #             else:
+    #                 print('Not found punctuation model , loading...')
+    #                 punctuation_model = self.load_Modules.load_punctuation_model()
+    #
+    #             transcribed_text2 = punctuation_model.restore_punctuation(transcribed_text1)
+    #             # punctuatorModel = Punctuator('model.pcl')
+    #             # transcribed_text2 = punctuatorModel.punctuate(transcribed_text1)
+    #             print("Punctuated transcribed text:{}".format(transcribed_text2))
+    #             sentences = sent_tokenize(transcribed_text2)
+    #             return sentences
+    #         except sr.UnknownValueError:
+    #             print("Google could not understand audio")
+    #         except sr.RequestError as e:
+    #             print("Google/PunctionalModel error; {0}".format(e))
+    #         finally:
+    #             del punctuation_model
+    #             gc.collect()
 
-                transcribed_text2 = punctuation_model.restore_punctuation(transcribed_text1)
-                # punctuatorModel = Punctuator('model.pcl')
-                # transcribed_text2 = punctuatorModel.punctuate(transcribed_text1)
-                print("Punctuated transcribed text:{}".format(transcribed_text2))
-                sentences = sent_tokenize(transcribed_text2)
-                return sentences
-            except sr.UnknownValueError:
-                print("Google could not understand audio")
-            except sr.RequestError as e:
-                print("Google/PunctionalModel error; {0}".format(e))
-            finally:
-                del punctuation_model
-                gc.collect()
-
-    def transcribe_audio_data(self, audio_data):
-        try:
-            r = sr.Recognizer()
-            transcribed_text1 = r.recognize_google(audio_data, language='en-US')
-            print("un-punctuated transcribed text:{}".format(transcribed_text1))
-            punctuation_model = LoadModules.all_modules['punctuation']
-            transcribed_text2 = punctuation_model.restore_punctuation(transcribed_text1)
-            print("Punctuated transcribed text:{}".format(transcribed_text2))
-            sentences = sent_tokenize(transcribed_text2)
-        except sr.UnknownValueError:
-            print("Google could not understand audio")
-        except sr.RequestError as e:
-            print("Google/PunctionalModel error; {0}".format(e))
-        finally:
-            del punctuation_model
-            gc.collect()
-
-        return sentences
-
-    # def transcribe_audio_with_punctuation(self, audio_file):
-    #     client = speech.SpeechClient()
-    #     transcribed_text = []
-    #     with open(audio_file, "rb") as audio_file:
-    #         content = audio_file.read()
-
-    #     audio = speech.RecognitionAudio(content=content)
-    #     config = speech.RecognitionConfig(
-    #         encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
-    #         language_code="en-US",
-    #         enable_automatic_punctuation=True,  # Enable automatic punctuation
-    #     )
-
-    #     response = client.recognize(config=config, audio=audio)
-
-    #     for result in response.results:
-    #         transcribed_text.append(result.alternatives[0].transcript)
-    #         print("Transcript: {}".format(result.alternatives[0].transcript))
-
-    #     transcribed_text = " ".join(transcribed_text)
-    #     sentences = sent_tokenize(transcribed_text)
+    # def transcribe_audio_data(self, audio_data):
+    #     try:
+    #         r = sr.Recognizer()
+    #         transcribed_text1 = r.recognize_google(audio_data, language='en-US')
+    #         print("un-punctuated transcribed text:{}".format(transcribed_text1))
+    #         punctuation_model = LoadModules.all_modules['punctuation']
+    #         transcribed_text2 = punctuation_model.restore_punctuation(transcribed_text1)
+    #         print("Punctuated transcribed text:{}".format(transcribed_text2))
+    #         sentences = sent_tokenize(transcribed_text2)
+    #     except sr.UnknownValueError:
+    #         print("Google could not understand audio")
+    #     except sr.RequestError as e:
+    #         print("Google/PunctionalModel error; {0}".format(e))
+    #     finally:
+    #         del punctuation_model
+    #         gc.collect()
+    #
     #     return sentences
+
+    def transcribe_audio_with_punctuation(self, audio_file):
+        client = speech.SpeechClient()
+        transcribed_text = []
+        with open(audio_file, "rb") as audio_file:
+            content = audio_file.read()
+
+        audio = speech.RecognitionAudio(content=content)
+        config = speech.RecognitionConfig(
+            encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
+            language_code="en-US",
+            enable_automatic_punctuation=True,  # Enable automatic punctuation
+        )
+
+        response = client.recognize(config=config, audio=audio)
+
+        for result in response.results:
+            transcribed_text.append(result.alternatives[0].transcript)
+            print("Transcript: {}".format(result.alternatives[0].transcript))
+
+        transcribed_text = " ".join(transcribed_text)
+        sentences = sent_tokenize(transcribed_text)
+        return sentences
 
     def text_blob_sentiments(self, text):
         # Create a TextBlob object
