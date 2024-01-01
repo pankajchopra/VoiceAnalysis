@@ -7,7 +7,6 @@ import re
 import gc
 import flair
 from flair.data import Sentence
-from deepmultilingualpunctuation import PunctuationModel
 from loadModules import LoadModules
 from nltk.tokenize import sent_tokenize
 import os
@@ -32,7 +31,7 @@ bhadresh_savani_bert_base_uncased_emotion_model = "bhadresh-savani/bert-base-unc
 
 
 class VoiceAnalysisServices(LoadModules):
-    load_Modules = LoadModules(False)
+    load_Modules = LoadModules(True)
 
     def __init__(self):
         print('in VoiceAnalysisServices constructor')
@@ -97,8 +96,6 @@ class VoiceAnalysisServices(LoadModules):
                 flair_sentiment = self.load_Modules.load_model_flair()
                 # print(LoadModules.all_modules.keys())
 
-            # download model
-            # flair_sentiment = flair.models.TextClassifier.load('en-sentiment')
             if type(text) == list:
                 sentences = [Sentence(sent, use_tokenizer=False) for sent in text]
             else:
@@ -249,6 +246,7 @@ class VoiceAnalysisServices(LoadModules):
         print(f'Text Classification Analysis results are {result}')
         # if return_all:
         del text_in_a_dataframe
+        del savani_classification
         gc.collect()
 
         return result
@@ -267,6 +265,8 @@ class VoiceAnalysisServices(LoadModules):
             savani_classification = self.load_Modules.load_model_bhadresh_savani()
 
         results = savani_classification(text)
+        del savani_classification
+        gc.collect()
         print(f'Text Classification Analysis results are {results}')
         if return_all:
             return results[0]
@@ -284,7 +284,7 @@ class VoiceAnalysisServices(LoadModules):
             text = ' '.join(text)
         # current_model = st.session_state['current_model']
         sam_lowe_classification = None
-        if LoadModules.all_modules and 'sam_lowe' in LoadModules.all_modules.keys():
+        if LoadModules.all_modules and 'samLowe' in LoadModules.all_modules.keys():
             print('Found sam_lowe_classification in global')
             sam_lowe_classification = LoadModules.all_modules['savani']
         else:
@@ -292,6 +292,8 @@ class VoiceAnalysisServices(LoadModules):
             sam_lowe_classification = self.load_Modules.load_model_sam_lowe(False)
 
         results = sam_lowe_classification(text)
+        del sam_lowe_classification
+        gc.collect()
         print(f'Sentimental Analysis  (SamLowe/roberta-base-go_emotions) results are {results}')
         if return_all:
             return results[0]
@@ -307,7 +309,13 @@ class VoiceAnalysisServices(LoadModules):
             try:
                 transcribed_text1 = r.recognize_google(audio, language='en-US')
                 print("un-punctuated transcribed text:{}".format(transcribed_text1))
-                punctuation_model = PunctuationModel()
+                if LoadModules.all_modules and 'punctuation' in LoadModules.all_modules.keys():
+                    print('Found sam_lowe_classification in global')
+                    punctuation_model = LoadModules.all_modules['punctuation']
+                else:
+                    print('Not found sam_lowe_classification global, loading...')
+                    punctuation_model = self.load_Modules.load_punctuation_model()
+
                 transcribed_text2 = punctuation_model.restore_punctuation(transcribed_text1)
                 # punctuatorModel = Punctuator('model.pcl')
                 # transcribed_text2 = punctuatorModel.punctuate(transcribed_text1)
@@ -318,21 +326,27 @@ class VoiceAnalysisServices(LoadModules):
                 print("Google could not understand audio")
             except sr.RequestError as e:
                 print("Google/PunctionalModel error; {0}".format(e))
-
+            finally:
+                del punctuation_model
+                gc.collect()
 
     def transcribe_audio_data(self, audio_data):
         try:
             r = sr.Recognizer()
             transcribed_text1 = r.recognize_google(audio_data, language='en-US')
             print("un-punctuated transcribed text:{}".format(transcribed_text1))
-            punctuationModel = PunctuationModel()
-            transcribed_text2 = punctuationModel.restore_punctuation(transcribed_text1)
+            punctuation_model = LoadModules.all_modules['punctuation']
+            transcribed_text2 = punctuation_model.restore_punctuation(transcribed_text1)
             print("Punctuated transcribed text:{}".format(transcribed_text2))
             sentences = sent_tokenize(transcribed_text2)
         except sr.UnknownValueError:
             print("Google could not understand audio")
         except sr.RequestError as e:
             print("Google/PunctionalModel error; {0}".format(e))
+        finally:
+            del punctuation_model
+            gc.collect()
+
         return sentences
 
     # def transcribe_audio_with_punctuation(self, audio_file):
@@ -417,11 +431,11 @@ class VoiceAnalysisServices(LoadModules):
     #         print(str(ex))
     #         return "error", str(ex)
 
-    def analyze_sentiment(self, text):
-        sentiment_analysis = pipeline("sentiment-analysis", framework="pt", model="SamLowe/roberta-base-go_emotions")
-        results = sentiment_analysis(text)
-        sentiment_results = {result['label']: result['score'] for result in results}
-        return sentiment_results
+    # def analyze_sentiment(self, text):
+    #     sentiment_analysis = pipeline("sentiment-analysis", framework="pt", model="SamLowe/roberta-base-go_emotions")
+    #     results = sentiment_analysis(text)
+    #     sentiment_results = {result['label']: result['score'] for result in results}
+    #     return sentiment_results
 
     # def inference(audio, sentiment_option):
     #     model = whisper.load_model("base")
@@ -468,6 +482,8 @@ class VoiceAnalysisServices(LoadModules):
 
         # sentiment_dict = vader_obj.polarity_scores(paragraph)
         print(f'Sentiment Analysis (Vader) results are {overall_sentiment}')
+        del vader_obj
+        gc.collect()
         if overall_sentiment:
             # decide sentiment as positive, negative and neutral
             if overall_sentiment >= 0.001:

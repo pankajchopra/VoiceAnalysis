@@ -1,6 +1,7 @@
 from transformers import pipeline
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import flair
+from deepmultilingualpunctuation import PunctuationModel
 
 
 class LoadModules:
@@ -9,11 +10,12 @@ class LoadModules:
     def __init__(self, loadAllModule):
         print('in LoadModules constructor')
         if loadAllModule:
-            self.all_modules = self.load_all_models()
+            self.load_all_models()
 
     def load_model_vader(self):
         try:
             LoadModules.all_modules['vader'] = SentimentIntensityAnalyzer()
+            print ('loaded VADER model')
             return LoadModules.all_modules['vader']
         except Exception as ex:
             print("Error occurred during .. load_model_vader")
@@ -23,6 +25,7 @@ class LoadModules:
     def load_model_flair(self):
         try:
             LoadModules.all_modules['flair'] = flair.models.TextClassifier.load('en-sentiment')
+            print('loaded Flair model')
             return LoadModules.all_modules['flair']
         except Exception as ex:
             print("Error occurred during .. load_model_flair")
@@ -34,17 +37,19 @@ class LoadModules:
             LoadModules.all_modules['distilbert'] = pipeline("sentiment-analysis",
                                                              model="distilbert-base-uncased-finetuned-sst-2-english",
                                                              top_k=1)
+            print('loaded distilbert-base-uncased-finetuned-sst-2-english model')
             return LoadModules.all_modules['distilbert']
         except Exception as ex:
             print("Error occurred during .. load_model_distilbert")
             print(str(ex))
             return "error", str(ex)
 
-    def load_model_sam_lowe(self, return_all_score):
+    def load_model_sam_lowe(self, return_all_score=False):
         try:
             LoadModules.all_modules['sam_lowe'] = pipeline("sentiment-analysis",
                                                            model="SamLowe/roberta-base-go_emotions",
                                                            return_all_scores=return_all_score)
+            print('loaded SamLowe/roberta-base-go_emotions model')
             return LoadModules.all_modules['sam_lowe']
         except Exception as ex:
             print("Error occurred during .. load_model_sam_lowe")
@@ -52,14 +57,14 @@ class LoadModules:
             return "error", str(ex)
 
 
-    def load_deepset_roberta_base_squad2(self, return_all_score):
+
+    def load_punctuation_model(self):
         try:
-            LoadModules.all_modules['deepset'] = pipeline("question-answering",
-                                                           model="deepset/roberta-base-squad2",
-                                                           return_all_scores=return_all_score)
-            return LoadModules.all_modules['deepset']
+            LoadModules.all_modules['punctuation'] = PunctuationModel()
+            print('loaded PunctuationModel model')
+            return LoadModules.all_modules['punctuation']
         except Exception as ex:
-            print("Error occurred during .. load_deepset_roberta_base_squad2")
+            print("Error occurred during .. load_punctuation_model")
             print(str(ex))
             return "error", str(ex)
 
@@ -69,23 +74,26 @@ class LoadModules:
             LoadModules.all_modules['savani'] = pipeline("text-classification",
                                                          model="bhadresh-savani/bert-base-uncased-emotion",
                                                          return_all_scores=False)
+            print('loaded bhadresh-savani/bert-base-uncased-emotion model')
+
             return LoadModules.all_modules['savani']
         except Exception as ex:
-            print("Error occurred during .. load_model_savani")
+            print("Error occurred during .. load_model_bhadresh_savani")
             print(str(ex))
             return "error", str(ex)
 
     def load_all_models(self):
         print('in load_all_models()')
-        result = dict()
+        result = self.all_modules
         result["flair"] = self.load_model_flair()
         result["distilbert"] = self.load_model_distilbert()
-        result["vader"] = self.load_model_sid()
-        result["savani"] = self.savani_classification = self.load_model_savani(False)
-        result["sam_lowe"] = self.load_model_sam_lowe()
-        return result
+        result["vader"] = self.load_model_vader()
+        result["savani"] = self.load_model_bhadresh_savani()
+        result["sam_lowe"] = self.load_model_sam_lowe(False)
+        # result["punctuation"] = self.load_punctuation_model()
 
-    def load_all_models(self, model: []):
+
+    def load_model(self, model: []):
         if 'flair' in model:
             return self.load_model_flair()
         if 'distilbert' in model:
@@ -96,8 +104,8 @@ class LoadModules:
             return self.load_model_vader()
         if 'samLowe' in model:
             return self.load_model_sam_lowe()
-        if 'deepset' in model:
-            return self.load_deepset_roberta_base_squad2()
+        if 'punctuation' in model:
+            return self.load_model_punctuation()
         else:
             print("Nothing to load")
 

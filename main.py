@@ -174,7 +174,7 @@ def process_and_show_new_sentimental_analysis_results(audio_file, transcribed, t
         st.text_area("Transcribed Text", " ".join(transcribed_text), key=1, height=150)
     else:
         # st.header("Text")
-        if(type(transcribed_text)==list):
+        if type(transcribed_text)==list:
             st.text_area("Text", " ".join(transcribed_text), height=150)
         else:
             st.text_area("Text", transcribed_text, height=150)
@@ -394,9 +394,9 @@ def main():
                 # uploadButtonState["value"] = False
                 # st.session_state.uploadButtonState = uploadButtonState
                 doActualthings(status_area, audio_file, model_predict)
-            except Exception as ex:
+            except Exception as ex1:
                 st.error("Error occurred during audio transcription and sentiment analysis.")
-                st.error(str(ex))
+                st.error(str(ex1))
                 traceback.print_exc()
             finally:
                 uploadButtonState["value"] = True
