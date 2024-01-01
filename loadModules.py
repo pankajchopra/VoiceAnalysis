@@ -46,11 +46,11 @@ class LoadModules:
 
     def load_model_sam_lowe(self, return_all_score=False):
         try:
-            LoadModules.all_modules['sam_lowe'] = pipeline("sentiment-analysis",
+            LoadModules.all_modules['samLowe'] = pipeline("sentiment-analysis",
                                                            model="SamLowe/roberta-base-go_emotions",
                                                            return_all_scores=return_all_score)
             print('loaded SamLowe/roberta-base-go_emotions model')
-            return LoadModules.all_modules['sam_lowe']
+            return LoadModules.all_modules['samLowe']
         except Exception as ex:
             print("Error occurred during .. load_model_sam_lowe")
             print(str(ex))
@@ -89,7 +89,7 @@ class LoadModules:
         result["distilbert"] = self.load_model_distilbert()
         result["vader"] = self.load_model_vader()
         result["savani"] = self.load_model_bhadresh_savani()
-        result["sam_lowe"] = self.load_model_sam_lowe(False)
+        result["samLowe"] = self.load_model_sam_lowe(False)
         # result["punctuation"] = self.load_punctuation_model()
 
 
