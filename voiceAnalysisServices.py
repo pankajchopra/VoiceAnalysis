@@ -2,6 +2,8 @@ import speech_recognition as sr
 import streamlit as st
 from transformers import pipeline
 from textblob import TextBlob
+# from textblob.sentiments import NaiveBayesAnalyzer
+from textblob.sentiments import PatternAnalyzer
 import pandas as pd
 import re
 import gc
@@ -13,6 +15,7 @@ import os
 import myUtilityDefs as myu
 
 from google.cloud import speech_v1p1beta1 as speech
+
 # import traceback
 
 
@@ -101,17 +104,26 @@ class VoiceAnalysisServices(LoadModules):
 
             if type(text) == list:
                 sentences = [Sentence(sent, use_tokenizer=False) for sent in text]
+                print('It is a list -Flair')
             else:
                 sentences = [Sentence(text)]
+                print('It is a str -Flair')
 
+            print(sentences)
             for sentence in sentences:
                 flair_sentiment.predict(sentence)
 
+            for sentence in sentences:
+                i = 0
+                print(sentence.labels[i].score )
+                print(sentence.labels[++i].value)
+
             # Aggregate sentiment scores for the entire paragraph
-            overall_sentiment_score = sum([sentence.labels[0].score for sentence in sentences]) / len(sentences)
-            overall_sentiment_label = self.calcSentiment(overall_sentiment_score, -0.001, 0.001)
-            print(overall_sentiment_score)
-            print(overall_sentiment_label)
+            overall_sentiment = [{'score': sentence.labels[0].score, 'label': sentence.labels[0].value} for sentence in sentences]
+            print(overall_sentiment)
+            overall_sentiment_label, overall_sentiment_score = self.calcSentimentWithLabelAlso(overall_sentiment)
+            print('overall_sentiment_score'+str(overall_sentiment_score))
+            print('overall_sentiment_label'+str(overall_sentiment_label))
             # model = st.session_state['current_model']
             print(f'Sentiment analysis (flair) results are {overall_sentiment_score}')
             if return_all:
@@ -134,16 +146,19 @@ class VoiceAnalysisServices(LoadModules):
             return 'Positive'
 
     def calcSentimentWithLabelAlso(self, result):
-        negatives = sum(r['score'] for r in result if r['label']=='NEGATIVE')
-        negatives_count = sum(1 for r in result if r['label'] == 'NEGATIVE')
-        positives = sum(r['score'] for r in result if r['label'] == 'POSITIVE')
-        positives_count = sum(1 for r in result if r['label'] == 'POSITIVE')
-        if positives_count> negatives_count:
-            return 'POSITIVE', positives / positives_count
-        elif positives_count == negatives_count:
-            return 'NEUTRAL', positives / positives_count
-        else:
-            return 'NEGATIVE', negatives / negatives_count
+        if result and len(result) > 1:
+            negatives = sum(r['score'] for r in result if r['label'] == 'NEGATIVE')
+            negatives_count = sum(1 for r in result if r['label'] == 'NEGATIVE')
+            positives = sum(r['score'] for r in result if r['label'] == 'POSITIVE')
+            positives_count = sum(1 for r in result if r['label'] == 'POSITIVE')
+            if positives_count > negatives_count:
+                return 'POSITIVE', positives / positives_count
+            elif positives_count == negatives_count:
+                return 'NEUTRAL', positives / positives_count
+            else:
+                return 'NEGATIVE', negatives / negatives_count
+        elif len(result) == 1:
+            return  result[0]['label'], result[0]['score']
 
     def perform_sentiment_analysis_all(self, text):
         print('In perform_sentiment_analysis_all')
@@ -356,7 +371,7 @@ class VoiceAnalysisServices(LoadModules):
         client = speech.SpeechClient()
         transcribed_text = []
         output_file = 'recorded_mono.wav'
-        myu.convert_to_mono(audio_file,  output_file )
+        myu.convert_to_mono(audio_file, output_file)
         with open(output_file, "rb") as audio_file:
             content = audio_file.read()
 
@@ -380,17 +395,21 @@ class VoiceAnalysisServices(LoadModules):
     def text_blob_sentiments(self, text):
         # Create a TextBlob object
         try:
-            output = TextBlob(text)
+            output = TextBlob(text, analyzer=PatternAnalyzer())
             print('text_blob_sentiments output:')
             print(output)
             if output:
                 polarity = output.sentiment.polarity
-                subjectivity = output.subjectivity
-                if -0.001 > polarity and subjectivity > 0:
+                subjectivity = output.sentiment.subjectivity
+                print(str(polarity) + ":" + str(subjectivity))
+                # when polarity is significantly less than 0 and subjectivity is also relatively high, the text is likely negative.
+                if polarity <= -0.1 and subjectivity >= 0.3:
                     return 'NEGATIVE', polarity
-                elif -0.001 <= polarity <= 0.001:
+                # If polarity is close to 0 (around 0) and subjectivity is also close to 0 (tending towards objectivity), the text is likely neutral.
+                elif (0.01 <= polarity <= -0.01) and subjectivity <= 0.1:
                     return 'NEUTRAL', polarity
                 else:
+                    # If polarity is significantly greater than 0 and subjectivity is also relatively high, the text is likely positive.
                     return 'POSITIVE', polarity
         except Exception as ex:
             print("Error occurred during .. text_blob_sentiments")
@@ -481,7 +500,7 @@ class VoiceAnalysisServices(LoadModules):
         # object gives a sentiment dictionary.
         # which contains pos, neg, neu, and compound scores.
         sentiments_dict = [vader_obj.polarity_scores(sentence)['compound'] for sentence in paragraph]
-        print("Vader number of sentences:"+str(len(sentiments_dict)))
+        print("Vader number of sentences:" + str(len(sentiments_dict)))
         # Calculate overall sentiment for the entire paragraph
         overall_sentiment = sum(sentiments_dict) / len(sentiments_dict)
 

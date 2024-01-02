@@ -54,8 +54,8 @@ with st.sidebar:
                      and determine the sentiment expressed within it.""")
 
     sentiment_models = {
-        'TextBlob(PatternAnlyzer) Based Sentiment Analysis': "textblob",
-        # 'TextBlob(NaiveBayesAnlyzer) Based Sentiment Analysis': "textblob",
+        'TextBlob PatternAnlyzer Based Sentiment Analysis': "textblob",
+        # 'TextBlob-NaiveBayesAnlyzer Based Sentiment Analysis': "textblob",
         'VADER Based Sentiment Analysis': 'vader',
         'FLAIR Based Sentiment Analysis': 'flair',
         'Distilbert-Sentiment Analysis': 'distilbert',
@@ -159,7 +159,7 @@ def process_and_show_sentimental_analysis_results(audio_file, transcribed, trans
             traceback.print_exc()
         else:
             st.header(f"Sentiment Analysis")
-            st.markdown("#Model:"+model_select)
+            st.markdown('*'+f'Model: {model_select}'+'*')
             sentiment_label = sentiment_label.lower()
             # print(sentiment_label)
             # print(sentiment_score)
